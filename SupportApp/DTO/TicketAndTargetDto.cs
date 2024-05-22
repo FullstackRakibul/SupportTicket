@@ -4,16 +4,16 @@ namespace SupportApp.DTO
 {
     public class TicketAndTargetDto
     {
-        public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; } = string.Empty;
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public int? UserId { get; set; }
-        public string? Attachment { get; set; }
+        public IFormFile? Attachment { get; set; }
 		public bool? IsEmail { get; set; }
         public string? FromEmail { get; set; }
         public string? EmailCc { get; set; }
         public int? UpdatedBy { get; set; }
         public string? CreatedAt { get; set; }
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         public string? UpdatedAt { get; set; }
         public TicketStatus Status { get; set; } = TicketStatus.Open;
         public TicketPriority Priority { get; set; } = TicketPriority.Regular;

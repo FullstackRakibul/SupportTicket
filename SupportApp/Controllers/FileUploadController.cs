@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging.Signing;
 using SupportApp.DTO;
 using SupportApp.Models;
+using SupportApp.Repository;
+using SupportApp.Repository.IReposiroty;
 using SupportApp.Service;
 using System.Net.Mail;
 
@@ -14,39 +16,18 @@ namespace SupportApp.Controllers
 	public class FileUploadController : ControllerBase
 	{
 		private readonly SupportAppDbContext _context;
-		private readonly GlobalFileUploadService _globalFileUploadService;
+        private readonly IGlobalFileUploadInterface _globalFileUploadInterface;
 
-		public FileUploadController (SupportAppDbContext context, GlobalFileUploadService globalFileUploadService)
+		public FileUploadController (SupportAppDbContext context, IGlobalFileUploadInterface globalFileUploadInterface)
 		{
 			_context = context;
-			_globalFileUploadService = globalFileUploadService;
+            _globalFileUploadInterface = globalFileUploadInterface;
 		}
 
 		[HttpGet]
 		public ActionResult Index()
 		{
 			try{
-
-                //Attachment handling(assuming attachment object exists in ticketAndTargetDto)
-
-                //if (ticketAndTargetDto.Attachment != null)
-                //{
-                //	// Extract attachment information
-                //	var attachment = ticketAndTargetDto.Attachment;
-                //	string fileName = ticketAndTargetDto.Attachment.ToString();
-
-
-                //	var projectRootPath = Path.Combine(Directory.GetCurrentDirectory());
-                //	string folderPath = Path.Combine(projectRootPath, "UploadMedia");
-
-                //	if (!Directory.Exists(folderPath))
-                //	{
-                //		Directory.CreateDirectory(folderPath);
-                //	}
-
-                //	// Combine folder path and filename
-                //	string filePath = Path.Combine(folderPath, fileName);
-                //	ticketData.Attachment = filePath;
 
                 return Ok("This controller is working Fine.");
 
@@ -139,5 +120,24 @@ namespace SupportApp.Controllers
                 return BadRequest("Failed to save the uploaded file.");
             }
 		}
-	}
+
+
+        //::::::::::::: File upload Repository 
+
+        [HttpPost]
+        [Route("global-file-uplaod", Name ="globalFileUpload")]
+        public async Task<IActionResult> CreateGlobalFile([FromForm] GlobalFileUploadDto globalFileUploadDto)
+        {
+            var fileUploadData = await _globalFileUploadInterface.UploadFile(globalFileUploadDto);
+
+            return Ok(new ApiResponseDto<string>
+            {
+                Status = true,
+                Message = "File upload success.",
+                Data = fileUploadData.ToString()
+            }) ;
+
+        }
+
+    }
 }

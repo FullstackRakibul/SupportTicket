@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
@@ -9,8 +8,11 @@ namespace SupportApp.Repository
     public class TicketRepository : ITicketInterface
     {
         private readonly SupportAppDbContext _context;
-        public TicketRepository(SupportAppDbContext context) {
+        private readonly IGlobalFileUploadInterface _globalFileUploadInterface;
+        public TicketRepository(SupportAppDbContext context, IGlobalFileUploadInterface globalFileUploadInterface = null)
+        {
             _context = context;
+            _globalFileUploadInterface = globalFileUploadInterface;
         }
 
 
@@ -35,8 +37,30 @@ namespace SupportApp.Repository
                     UpdatedAt = null,
 
                 };
+
                 _context.Ticket.Add(raisedIssueData);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+
+                //:::::::::::::::::::::: global File Upload
+
+                if (ticketAndTargetDto.Attachment != null)
+                {
+                    var globalFileUploadData = await _globalFileUploadInterface.UploadFile(new GlobalFileUploadDto
+                    {
+                        TicketId = raisedIssueData.Id,
+                        FolderIndex = "supportTicket",
+                        UploadedFile = ticketAndTargetDto.Attachment,
+                        FilePathUrl = ""
+                    });
+
+                    raisedIssueData.Attachment = globalFileUploadData.Id.ToString();
+                }
+                // Update ticket with attachment path
+                _context.Ticket.Update(raisedIssueData);
+                await _context.SaveChangesAsync();
+                //::::::::::::::::::::::
+
+
 
                 var assignTargetData = new Target
                 {
@@ -50,7 +74,7 @@ namespace SupportApp.Repository
                 return "Issue Raised Successfully";
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ("Issue raised failed.");
             }
@@ -85,7 +109,7 @@ namespace SupportApp.Repository
         // :::::::::::::::::::::::::: Update Ticket 
         public async Task<string> UpdateRaisedIssueWithAttachment(TicketAndTargetDto ticketAndTargetDto)
         {
-            var retrieveData = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketAndTargetDto.TicketId );
+            var retrieveData = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketAndTargetDto.TicketId);
             if (retrieveData != null)
             {
                 return "Ticket Data Not Exits.";

@@ -15,6 +15,7 @@ using SupportApp.Service.Pagination;
 using SupportApp.Repository.IReposiroty;
 using SupportApp.Repository;
 using Org.BouncyCastle.Asn1.Mozilla;
+using System.Diagnostics;
 
 namespace SupportApp.Controllers
 {
@@ -423,16 +424,18 @@ namespace SupportApp.Controllers
         //:::::::::::::::::::::::::::::::: Raised Issue
         [HttpPost]
         [Route("raised-issue" , Name ="raisedIssueController")]
-        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto )
+        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto)
         {
             try
             {
+                Debug.WriteLine(ticketAndTargetDto);
+                
                 var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
                 return Ok(new ApiResponseDto<string>
                 {
                     Status = true,
-                    Message = "This Api and repo works fine",
+                    Message = "Request successfull.",
                     Data = responseData
                 });
             }
