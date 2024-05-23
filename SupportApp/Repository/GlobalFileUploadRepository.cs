@@ -51,16 +51,16 @@ namespace SupportApp.Repository
 
         private async Task<string> SaveFile(GlobalFileUploadDto globalFileUploadDto)
         {
-            //string folderPath = @"C:\inetpub\wwwroot\UplodedFiles";
-
             //root path for the uploaded file
             string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            //string wwwrootPath = @"C:\inetpub\wwwroot\UplodedFiles";
 
             //create folder if not exist
             if (!Directory.Exists(wwwrootPath))
             {
                 Directory.CreateDirectory(wwwrootPath);
             }
+
             //sub path for the uploaded file
             string folderPath = Path.Combine(wwwrootPath, globalFileUploadDto.FilePathUrl ?? "uploads");
 

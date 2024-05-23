@@ -1,4 +1,5 @@
 using MailKit.Net.Pop3;
+using MailKit.Security;
 using MimeKit;
 using SupportApp.Models;
 using System.Text.RegularExpressions;
@@ -57,33 +58,44 @@ public class EmailBoxService
         return headers;
     }
 
+
+
     public List<EmailDetails> GetEmailDetails()
     {
         var emailDetailsList = new List<EmailDetails>();
         try
         {
             using var client = new Pop3Client();
-            client.Connect("mail.dhakawestern.com", 995, true);
-            client.Authenticate("dev@dhakawestern.com", "dev@dhakawestern.com");
+            client.CheckCertificateRevocation = false;
+            client.Connect("192.168.1.254", 110, SecureSocketOptions.None);
+            client.Authenticate("rakibul.it", "B&k8#G!w@uR");
 
-            for (int i = 0; i < client.Count; i++)
+            if (client.IsAuthenticated)
             {
-                var message = client.GetMessage(i);
-                var emailDetails = new EmailDetails
+                for (int i = 0; i < client.Count; i++)
                 {
-                    MessageId = message.MessageId.ToString(),
-                    Headers = GetHeaders(message),
-                    //Headers = ExtractHeaders(message),
-                   // From = message.From.ToString(),
-                    From = Regex.Match(message.From.ToString(), @"<([^>]+)>").Groups[1].Value,
-                    Subject = message.Subject,
-                    Body = !string.IsNullOrEmpty(message.TextBody)? message.TextBody: message.HtmlBody,
-                    To = message.To.ToString(),
-                    Cc = message.Cc.ToString(),
-                    Bcc = message.Bcc.ToString(),
-                    Attachments = GetAttachmentFilenames(message)
-                };
-                emailDetailsList.Add(emailDetails);
+                    var message = client.GetMessage(i);
+                    var emailDetails = new EmailDetails
+                    {
+                        //MessageId = message.MessageId.ToString(),
+                        MessageId = string.IsNullOrEmpty(message.MessageId) ? GenerateRandomMessageId() : message.MessageId,
+                        Headers = GetHeaders(message),
+                        //Headers = ExtractHeaders(message),
+                        // From = message.From.ToString(),
+                        From = Regex.Match(message.From.ToString(), @"<([^>]+)>").Groups[1].Value,
+                        Subject = message.Subject,
+                        Body = !string.IsNullOrEmpty(message.TextBody) ? message.TextBody : message.HtmlBody,
+                        To = message.To.ToString(),
+                        Cc = message.Cc.ToString(),
+                        Bcc = message.Bcc.ToString(),
+                        Attachments = GetAttachmentFilenames(message)
+                    };
+                    emailDetailsList.Add(emailDetails);
+                }
+            }
+            else
+            {
+                Console.WriteLine("client not authenticate.");
             }
             client.Disconnect(true);
         }
@@ -93,5 +105,10 @@ public class EmailBoxService
         }
 
         return emailDetailsList;
+    }
+
+    private string GenerateRandomMessageId()
+    {
+        return Guid.NewGuid().ToString();
     }
 }

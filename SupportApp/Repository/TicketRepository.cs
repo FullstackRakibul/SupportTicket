@@ -60,8 +60,6 @@ namespace SupportApp.Repository
                 await _context.SaveChangesAsync();
                 //::::::::::::::::::::::
 
-
-
                 var assignTargetData = new Target
                 {
                     TicketId = raisedIssueData.Id,

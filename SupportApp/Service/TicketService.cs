@@ -54,7 +54,7 @@ public class TicketService
         // Find the "Date" header
         var dateHeader = emailDetails.Headers.FirstOrDefault(header => header.Key == "Date");
         //Console.WriteLine($"This is create ticket from mail , date test : {dateHeader}");
-        if (existingTicket == null && DateTime.TryParse(dateHeader.Value, out var createdDate))
+        if (existingTicket == null)
         {
             var ticket = new Ticket
             {
@@ -67,7 +67,7 @@ public class TicketService
                     ? string.Join(",", emailDetails.Attachments)
                     : null,
                 Status = TicketStatus.Acknowledged,
-                CreatedAt = Convert.ToDateTime(createdDate).ToString("yyyy-MM-dd HH:mm:ss"),
+                CreatedAt = Convert.ToDateTime(DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),
                 //CreatedAt = createdDate.ToString("yyyy-MM-dd HH:mm:ss"),
                 UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 IsEmail = true,
