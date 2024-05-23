@@ -92,7 +92,6 @@ namespace SupportApp.Controllers
             {
                 return NotFound();
             }
-
             return ticket;
         }
 
@@ -177,7 +176,6 @@ namespace SupportApp.Controllers
             try
             {
                 var emailDetailsList = _emailBoxService.GetEmailDetails();
-                // return Ok(emailDetailsList);
                 foreach (var emailDetails in emailDetailsList)
                 {
                     _ticketService.CreateTicketFromEmail(emailDetails);
@@ -191,11 +189,11 @@ namespace SupportApp.Controllers
             }
         }
 
-        [HttpPut("id")]
-        public IActionResult UpdateTicketStatus()
-        {
-            return Ok("update status controller working");
-        }
+        //[HttpPut("id")]
+        //public IActionResult UpdateTicketStatus()
+        //{
+        //    return Ok("update status controller working");
+        //}
 
         [HttpPost("createTicketWithTarget")]
         public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {

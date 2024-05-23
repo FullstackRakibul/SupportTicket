@@ -1,6 +1,8 @@
-﻿using SupportApp.Repository;
+﻿using SupportApp.Controllers;
+using SupportApp.Repository;
 using SupportApp.Repository.IReposiroty;
 using SupportApp.Service;
+using SupportApp.Service.Pagination;
 
 namespace SupportApp.DependencyContainer
 {
@@ -11,7 +13,13 @@ namespace SupportApp.DependencyContainer
 
             //services ......
             services.AddTransient<TicketTypeService, TicketTypeService>();
-            
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<EmailBoxService, EmailBoxService>();
+            services.AddTransient<TicketService, TicketService>();
+            services.AddTransient<PaginationService, PaginationService>();
+            services.AddScoped<TargetService, TargetService>();
+            services.AddTransient<AuthController>();
+
 
 
             // repositories ......
@@ -19,6 +27,7 @@ namespace SupportApp.DependencyContainer
             services.AddTransient<ITicketInterface, TicketRepository>();
             services.AddTransient<ITicketTypeInterface, TicketTypeRepository>();
             services.AddTransient<IGlobalFileUploadInterface, GlobalFileUploadRepository>();
+
 
             return services;
         }
