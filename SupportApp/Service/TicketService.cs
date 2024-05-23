@@ -47,7 +47,6 @@ public class TicketService
     }
 
     // create ticket from mail 
-    //public async void CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails)
     public async Task CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails)
     {
         var existingTicket = _context.Ticket.FirstOrDefault(ticket => ticket.MessageId == emailDetails.MessageId);
@@ -128,47 +127,8 @@ public class TicketService
                 UpdatedAt = null,
             };
 
-
-			//---------------------------------------------------------------
-
-			// Attachment handling (assuming attachment object exists in ticketAndTargetDto)
-			//         if (ticketAndTargetDto.Attachment != null)
-			//         {
-			//             // Extract attachment information
-			//             var attachment = ticketAndTargetDto.Attachment;
-			//             string fileName = ticketAndTargetDto.Attachment.ToString();
-
-			//             // Get the project root folder path
-			//             var projectRootPath = Path.Combine(Directory.GetCurrentDirectory()); // Navigate up two levels
-
-			//             // Combine path for "media" subfolder
-			//             string folderPath = Path.Combine(projectRootPath, "UploadMedia");
-
-			//             // Check if the folder exists, if not, create it
-			//             if (!Directory.Exists(folderPath))
-			//             {
-			//                 Directory.CreateDirectory(folderPath);
-			//             }
-
-			//             // Combine folder path and filename
-			//             string filePath = Path.Combine(folderPath, fileName);
-			//	//System.IO.File.WriteAllBytes(filePath, attachment);
-			//	ticketData.Attachment = filePath;
-			//         }
-
-			////---------------------------------------------------------------
-
-			//________________________________________
-
-
-			
-
-			//________________________________________
-
 			_context.Ticket.Add(ticketData);
-            _context.SaveChanges();
-
-
+            await _context.SaveChangesAsync();
 
 
             // create target after ticket has been created 

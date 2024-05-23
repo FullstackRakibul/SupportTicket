@@ -131,40 +131,19 @@ namespace SupportApp.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         //public async Task<ActionResult<Ticket>> PostTicket([FromBody] Ticket ticket) 
-        public IActionResult CreateTicket( [FromBody] TicketAndTargetDto ticketAndTargetDto)
+        public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
         {
             try
             {
-              _ticketService.CreateTicket(ticketAndTargetDto);
-              _context.SaveChangesAsync();
-
-
-                //ticketAndTargetDto.TicketId = ticketAndTargetDto.Id;
-                //_targetService.InitialTargetCreate(ticketAndTargetDto);
-                //_context.SaveChangesAsync();
-
-
-                //create a new target
-                //int newTicketId = ticketAndTargetDto.Id;
-                //var newTarget = new Target
-                //{
-                //    TicketId = newTicketId,
-                //    DepartmentId = ticketAndTargetDto.DepartmentId,
-                //    UnitId = ticketAndTargetDto.UnitId,
-                    
-                //};
-
-                // Add the new Target to the context and save changes
-                //_context.Target.Add(newTarget);
-                //_context.SaveChanges();
-
+                _ticketService.CreateTicket(ticketAndTargetDto);
+                _context.SaveChangesAsync();
                 return Ok($"Ticket Create Successfully.");
-          }
-          catch (Exception ex)
-          {
-              Console.WriteLine(ex);
-              return BadRequest("Create Ticket failed for BadRequest-C");
-          }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest("Create Ticket failed for BadRequest-C");
+            }
         }
 
         // DELETE: api/Ticket/5
