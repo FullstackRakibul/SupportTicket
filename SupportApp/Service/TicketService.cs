@@ -47,14 +47,13 @@ public class TicketService
     }
 
     // create ticket from mail 
-    //public async void CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails)
     public async Task CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails)
     {
         var existingTicket = _context.Ticket.FirstOrDefault(ticket => ticket.MessageId == emailDetails.MessageId);
         // Find the "Date" header
         var dateHeader = emailDetails.Headers.FirstOrDefault(header => header.Key == "Date");
         //Console.WriteLine($"This is create ticket from mail , date test : {dateHeader}");
-        if (existingTicket == null && DateTime.TryParse(dateHeader.Value, out var createdDate))
+        if (existingTicket == null)
         {
             var ticket = new Ticket
             {
@@ -67,7 +66,7 @@ public class TicketService
                     ? string.Join(",", emailDetails.Attachments)
                     : null,
                 Status = TicketStatus.Acknowledged,
-                CreatedAt = Convert.ToDateTime(createdDate).ToString("yyyy-MM-dd HH:mm:ss"),
+                CreatedAt = Convert.ToDateTime(DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),
                 //CreatedAt = createdDate.ToString("yyyy-MM-dd HH:mm:ss"),
                 UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 IsEmail = true,
@@ -128,47 +127,8 @@ public class TicketService
                 UpdatedAt = null,
             };
 
-
-			//---------------------------------------------------------------
-
-			// Attachment handling (assuming attachment object exists in ticketAndTargetDto)
-			//         if (ticketAndTargetDto.Attachment != null)
-			//         {
-			//             // Extract attachment information
-			//             var attachment = ticketAndTargetDto.Attachment;
-			//             string fileName = ticketAndTargetDto.Attachment.ToString();
-
-			//             // Get the project root folder path
-			//             var projectRootPath = Path.Combine(Directory.GetCurrentDirectory()); // Navigate up two levels
-
-			//             // Combine path for "media" subfolder
-			//             string folderPath = Path.Combine(projectRootPath, "UploadMedia");
-
-			//             // Check if the folder exists, if not, create it
-			//             if (!Directory.Exists(folderPath))
-			//             {
-			//                 Directory.CreateDirectory(folderPath);
-			//             }
-
-			//             // Combine folder path and filename
-			//             string filePath = Path.Combine(folderPath, fileName);
-			//	//System.IO.File.WriteAllBytes(filePath, attachment);
-			//	ticketData.Attachment = filePath;
-			//         }
-
-			////---------------------------------------------------------------
-
-			//________________________________________
-
-
-			
-
-			//________________________________________
-
 			_context.Ticket.Add(ticketData);
-            _context.SaveChanges();
-
-
+            await _context.SaveChangesAsync();
 
 
             // create target after ticket has been created 

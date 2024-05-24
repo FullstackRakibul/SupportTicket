@@ -15,6 +15,7 @@ using SupportApp.Service.Pagination;
 using SupportApp.Repository.IReposiroty;
 using SupportApp.Repository;
 using Org.BouncyCastle.Asn1.Mozilla;
+using System.Diagnostics;
 
 namespace SupportApp.Controllers
 {
@@ -91,7 +92,6 @@ namespace SupportApp.Controllers
             {
                 return NotFound();
             }
-
             return ticket;
         }
 
@@ -130,40 +130,19 @@ namespace SupportApp.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         //public async Task<ActionResult<Ticket>> PostTicket([FromBody] Ticket ticket) 
-        public IActionResult CreateTicket( [FromBody] TicketAndTargetDto ticketAndTargetDto)
+        public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
         {
             try
             {
-              _ticketService.CreateTicket(ticketAndTargetDto);
-              _context.SaveChangesAsync();
-
-
-                //ticketAndTargetDto.TicketId = ticketAndTargetDto.Id;
-                //_targetService.InitialTargetCreate(ticketAndTargetDto);
-                //_context.SaveChangesAsync();
-
-
-                //create a new target
-                //int newTicketId = ticketAndTargetDto.Id;
-                //var newTarget = new Target
-                //{
-                //    TicketId = newTicketId,
-                //    DepartmentId = ticketAndTargetDto.DepartmentId,
-                //    UnitId = ticketAndTargetDto.UnitId,
-                    
-                //};
-
-                // Add the new Target to the context and save changes
-                //_context.Target.Add(newTarget);
-                //_context.SaveChanges();
-
+                _ticketService.CreateTicket(ticketAndTargetDto);
+                _context.SaveChangesAsync();
                 return Ok($"Ticket Create Successfully.");
-          }
-          catch (Exception ex)
-          {
-              Console.WriteLine(ex);
-              return BadRequest("Create Ticket failed for BadRequest-C");
-          }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest("Create Ticket failed for BadRequest-C");
+            }
         }
 
         // DELETE: api/Ticket/5
@@ -197,7 +176,6 @@ namespace SupportApp.Controllers
             try
             {
                 var emailDetailsList = _emailBoxService.GetEmailDetails();
-                // return Ok(emailDetailsList);
                 foreach (var emailDetails in emailDetailsList)
                 {
                     _ticketService.CreateTicketFromEmail(emailDetails);
@@ -211,11 +189,11 @@ namespace SupportApp.Controllers
             }
         }
 
-        [HttpPut("id")]
-        public IActionResult UpdateTicketStatus()
-        {
-            return Ok("update status controller working");
-        }
+        //[HttpPut("id")]
+        //public IActionResult UpdateTicketStatus()
+        //{
+        //    return Ok("update status controller working");
+        //}
 
         [HttpPost("createTicketWithTarget")]
         public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {
@@ -423,16 +401,18 @@ namespace SupportApp.Controllers
         //:::::::::::::::::::::::::::::::: Raised Issue
         [HttpPost]
         [Route("raised-issue" , Name ="raisedIssueController")]
-        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto )
+        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto)
         {
             try
             {
+                Debug.WriteLine(ticketAndTargetDto);
+                
                 var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
                 return Ok(new ApiResponseDto<string>
                 {
                     Status = true,
-                    Message = "This Api and repo works fine",
+                    Message = "Request successfull.",
                     Data = responseData
                 });
             }

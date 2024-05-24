@@ -40,7 +40,7 @@ namespace SupportApp.Controllers
             return Ok(new ApiResponseDto<IEnumerable<TicketType>>
             {
                 Status=true,
-                Message="Get All Ticket data",
+                Message="Get All Ticket Type data",
                 Data=allTicketTypeData
             });
 
@@ -126,7 +126,6 @@ namespace SupportApp.Controllers
             {
                 return NotFound();
             }
-
             _context.TicketType.Remove(ticketType);
             await _context.SaveChangesAsync();
 
