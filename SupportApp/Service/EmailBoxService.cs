@@ -2,6 +2,7 @@ using MailKit.Net.Pop3;
 using MailKit.Security;
 using MimeKit;
 using SupportApp.Models;
+using SupportApp.Repository.IReposiroty;
 using System.Text.RegularExpressions;
 
 namespace SupportApp.Service;
@@ -9,6 +10,7 @@ namespace SupportApp.Service;
 public class EmailBoxService
 {
     private readonly SupportAppDbContext _dbContext;
+    private readonly IGlobalFileUploadInterface _globalFileUploadInterface;
     //private readonly EmailSettings _emailSettings;
     public EmailBoxService(SupportAppDbContext dbContext)
     {
@@ -23,7 +25,8 @@ public class EmailBoxService
         public string To { get; set; } = "";
         public string Cc { get; set; } = "";
         public string Bcc { get; set; } = "";
-        public List<string>? Attachments { get; set; }
+        //public List<string>? Attachments { get; set; }
+        public IFormFile? Attachments { get; set; }
         public List<KeyValuePair<string, string>> Headers { get; set; }
     }
 
@@ -88,9 +91,12 @@ public class EmailBoxService
                         To = message.To.ToString(),
                         Cc = message.Cc.ToString(),
                         Bcc = message.Bcc.ToString(),
-                        Attachments = GetAttachmentFilenames(message)
+                        //Attachments = GetAttachmentFilenames(message)
                     };
                     emailDetailsList.Add(emailDetails);
+
+
+
                 }
             }
             else

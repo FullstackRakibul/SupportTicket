@@ -4,16 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Utilities;
 using SupportApp.DTO;
 using SupportApp.Models;
+using SupportApp.Repository.IReposiroty;
 using SupportApp.Service.Notifications;
 using System;
+using System.Net.Mail;
 namespace SupportApp.Service;
 public class TicketService
 {
     private readonly SupportAppDbContext _context;
+    private IGlobalFileUploadInterface _globalFileUploadInterface;
 
-    public TicketService(SupportAppDbContext context )
+    public TicketService(SupportAppDbContext context , IGlobalFileUploadInterface globalFileUploadInterface )
     {
         _context = context;
+        _globalFileUploadInterface = globalFileUploadInterface;
         
     }
     // private string GenerateTicketNumber()
@@ -47,7 +51,7 @@ public class TicketService
     }
 
     // create ticket from mail 
-    public async Task CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails)
+    public async Task CreateTicketFromEmail(EmailBoxService.EmailDetails emailDetails  )
     {
         var existingTicket = _context.Ticket.FirstOrDefault(ticket => ticket.MessageId == emailDetails.MessageId);
         // Find the "Date" header
@@ -62,12 +66,8 @@ public class TicketService
                 MessageId = emailDetails.MessageId,
                 Description = emailDetails.Body,
                 Priority = TicketPriority.BusinessClass,
-                Attachment = emailDetails.Attachments != null && emailDetails.Attachments.Any()
-                    ? string.Join(",", emailDetails.Attachments)
-                    : null,
                 Status = TicketStatus.Acknowledged,
                 CreatedAt = Convert.ToDateTime(DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),
-                //CreatedAt = createdDate.ToString("yyyy-MM-dd HH:mm:ss"),
                 UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 IsEmail = true,
                 FromEmail = emailDetails.From.ToString(),
@@ -82,16 +82,36 @@ public class TicketService
             _context.Ticket.Add(ticket);
             await _context.SaveChangesAsync();
 
-            int newTicketId = ticket.Id;
-            var newTarget = new Target
-            {
-                TicketId = newTicketId,
-                DepartmentId = _context.Department.Where(d => d.DepartmentName == "Information Technology").FirstOrDefault().Id,
-                UnitId = _context.Unit.Where(u => u.Name == "Corporate Office").FirstOrDefault().Id,
-            };
+            //::::::::  global file save 
 
-            _context.Target.Add(newTarget);
+            if (emailDetails.Attachments !=null)
+            {
+                var globalFileUploadData = await _globalFileUploadInterface.UploadFile(new GlobalFileUploadDto
+                {
+                    TicketId = ticket.Id,
+                    FolderIndex = "MailTicket",
+                    UploadedFile = emailDetails.Attachments,
+                    FilePathUrl = ""
+                });
+
+                ticket.Attachment = globalFileUploadData.Id.ToString();
+            }
+
+            _context.Ticket.Update(ticket);
             await _context.SaveChangesAsync();
+
+            // :::::::: global file save end
+
+            //int newTicketId = ticket.Id;
+            //var newTarget = new Target
+            //{
+            //    TicketId = newTicketId,
+            //    DepartmentId = _context.Department.Where(d => d.DepartmentName == "Information Technology").FirstOrDefault().Id,
+            //    UnitId = _context.Unit.Where(u => u.Name == "Corporate Office").FirstOrDefault().Id,
+            //};
+
+            //_context.Target.Add(newTarget);
+            //await _context.SaveChangesAsync();
         }
         else
         {
