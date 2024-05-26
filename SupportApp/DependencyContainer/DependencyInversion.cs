@@ -27,6 +27,7 @@ namespace SupportApp.DependencyContainer
             services.AddTransient<ITicketInterface, TicketRepository>();
             services.AddTransient<ITicketTypeInterface, TicketTypeRepository>();
             services.AddTransient<IGlobalFileUploadInterface, GlobalFileUploadRepository>();
+            services.AddTransient<ITaskItemInterface, TaskItemRepository>();
 
 
             return services;

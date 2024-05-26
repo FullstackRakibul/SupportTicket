@@ -39,6 +39,8 @@ namespace SupportApp.Models
 
         public DbSet<CodeSnippetAccess> CodeSnippetAccess { get; set; }
 
+        public DbSet<TaskItem> TaskItem { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CodeSnippet>()
