@@ -12,7 +12,7 @@ namespace SupportApp.Models
 
         public string? AssignedTo { get; set; }
 
-        public string? Status { get; set; }
+        public int? Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

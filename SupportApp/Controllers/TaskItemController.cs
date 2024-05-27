@@ -56,11 +56,20 @@ namespace SupportApp.Controllers
             });
         }
 
-        //// PUT api/<ValuesController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        
+        [HttpPut()]
+        [Route("mark-done-{id}",Name ="markDone")]
+        public async Task<IActionResult> MarkDoneTaskItem(int id)
+        {
+            var markData = await _taskItemInterface.MarkTaskAsDoneInterface(id);
+
+            return Ok(new ApiResponseDto<string>
+            {
+                Status = true,
+                Message = "Response from mark done",
+                Data = markData
+            });
+        }
 
         //// DELETE api/<ValuesController>/5
         //[HttpDelete("{id}")]

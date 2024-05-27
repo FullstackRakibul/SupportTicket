@@ -7,5 +7,6 @@ namespace SupportApp.Repository.IReposiroty
     {
         Task<string> CreateTaskItemInterface(TaskItemDto taskItemDto);
         Task<IEnumerable<TaskItem>> GetTaskItemsInterface();
+        Task<string> MarkTaskAsDoneInterface(int id);
     }
 }
