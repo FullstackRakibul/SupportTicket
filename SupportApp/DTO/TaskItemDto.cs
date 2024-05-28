@@ -7,5 +7,7 @@
         public string? AssignedTo { get; set; }
         public string? CreatedBy { get; set; }
         public int? Status { get; set; }
+        public string? CreatedByAgentName { get; set; }
+        public string? EmpCode { get; set; }
     }
 }
