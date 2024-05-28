@@ -4,6 +4,7 @@ using SQLitePCL;
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
+using System.Collections.Immutable;
 
 namespace SupportApp.Repository
 {
@@ -22,7 +23,7 @@ namespace SupportApp.Repository
                     var insertTaskItemData = new TaskItem
                     {
                         TaskItemTitle = taskItemDto.TaskItemTitle,
-                        AssignedTo = taskItemDto.AssignedTo.ToString(),
+                        AssignedTo = taskItemDto.AssignedTo,
                         CreatedAt=DateTime.Now,
                         CreatedBy=taskItemDto.CreatedBy,
                         Status= 0 
@@ -42,7 +43,7 @@ namespace SupportApp.Repository
 
         public async Task<IEnumerable<TaskItem>> GetTaskItemsInterface()
         {
-            var taskItemData =  await _dbcontext.TaskItem.Where(data=>data.Status <5).ToListAsync();
+            var taskItemData =  await _dbcontext.TaskItem.Where(data=>data.Status < 5).ToListAsync();
             return taskItemData;
         }
 
@@ -62,8 +63,18 @@ namespace SupportApp.Repository
             {
                 return "Operation failed !";
             }
+        }
 
-            return id.ToString();
+        public async Task<TaskItem> TaskItemDetailsInterface(int id)
+        {
+            try
+            {
+                var taskItemdata = await _dbcontext.TaskItem.FirstOrDefaultAsync(data=>data.Id==id);
+                return taskItemdata;
+            }catch(Exception ex)
+            {
+                throw;
+            } 
         }
 
     }

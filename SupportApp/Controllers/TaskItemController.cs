@@ -37,10 +37,17 @@ namespace SupportApp.Controllers
             });
         }
 
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet()]
+        [Route("item-details-{id}",Name = "getTaskItemDetails")]
+        public async Task<IActionResult> GetTaskItemDetails(int id)
         {
-            return "value";
+            var itemDetailsData =await _taskItemInterface.TaskItemDetailsInterface(id);
+            return Ok(new ApiResponseDto<TaskItem>
+            {
+                Status = true,
+                Message = "item details request response :",
+                Data = itemDetailsData
+            });
         }
 
         [HttpPost]
