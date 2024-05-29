@@ -29,7 +29,7 @@ namespace SupportApp.Controllers
                 return NotFound();
             }
 
-            return Ok(new ApiResponseDto<IEnumerable<TaskItem>>
+            return Ok(new ApiResponseDto<IEnumerable<TaskItemDto>>
             {
                 Status = true,
                 Message = "Task create request response :",
@@ -42,7 +42,7 @@ namespace SupportApp.Controllers
         public async Task<IActionResult> GetTaskItemDetails(int id)
         {
             var itemDetailsData =await _taskItemInterface.TaskItemDetailsInterface(id);
-            return Ok(new ApiResponseDto<TaskItem>
+            return Ok(new ApiResponseDto<TaskItemDto>
             {
                 Status = true,
                 Message = "item details request response :",
@@ -55,7 +55,7 @@ namespace SupportApp.Controllers
         public async Task<IActionResult> CreateTaskItem(TaskItemDto taskItemDto)
         {
             var itemData = await _taskItemInterface.CreateTaskItemInterface(taskItemDto);
-            return Ok(new ApiResponseDto<string>
+            return Ok(new ApiResponseDto<TaskItemDto>
             {
                 Status=true,
                 Message="Task create request response :",
@@ -74,6 +74,20 @@ namespace SupportApp.Controllers
             {
                 Status = true,
                 Message = "Response from mark done",
+                Data = markData
+            });
+        }
+
+        [HttpPut()]
+        [Route("update-status-{id}", Name = "updateStatus")]
+        public async Task<IActionResult> UpdateStatusTaskItem(int id)
+        {
+            var markData = await _taskItemInterface.UpdateTaskItemStatusInterface(id);
+
+            return Ok(new ApiResponseDto<string>
+            {
+                Status = true,
+                Message = "Response from update status",
                 Data = markData
             });
         }

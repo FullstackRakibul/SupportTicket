@@ -5,10 +5,11 @@ namespace SupportApp.Repository.IReposiroty
 {
     public interface ITaskItemInterface
     {
-        Task<string> CreateTaskItemInterface(TaskItemDto taskItemDto);
-        Task<IEnumerable<TaskItem>> GetTaskItemsInterface();
+        Task<TaskItemDto> CreateTaskItemInterface(TaskItemDto taskItemDto);
+        Task<IEnumerable<TaskItemDto>> GetTaskItemsInterface();
         Task<string> MarkTaskAsDoneInterface(int id);
+        Task<string> UpdateTaskItemStatusInterface(int id);
 
-        Task<TaskItem> TaskItemDetailsInterface(int id);
+        Task<TaskItemDto> TaskItemDetailsInterface(int id);
     }
 }
