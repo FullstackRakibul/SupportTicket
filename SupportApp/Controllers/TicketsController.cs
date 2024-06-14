@@ -41,21 +41,21 @@ namespace SupportApp.Controllers
         }
 
         // GET: api/Ticket
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicket()
-        {
-          try
-          {
-              var tickets = await _context.Ticket.Where(ticket => ticket.Status != TicketStatus.Deleted).OrderByDescending(ticket => ticket.CreatedAt)
-               .ToListAsync();
-                return tickets;
-          }
-          catch (Exception ex)
-          {
-              Console.WriteLine(ex);
-              return StatusCode(500, "Server Response Error.");
-          }
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Ticket>>> GetTicket()
+        //{
+        //  try
+        //  {
+        //      var tickets = await _context.Ticket.Where(ticket => ticket.Status < TicketStatus.Deleted).OrderByDescending(ticket => ticket.CreatedAt)
+        //       .ToListAsync();
+        //        return tickets;
+        //  }
+        //  catch (Exception ex)
+        //  {
+        //      Console.WriteLine(ex);
+        //      return StatusCode(500, "Server Response Error.");
+        //  }
+        //}
 
 
         [HttpGet("getTicketFromMail")]
@@ -126,24 +126,24 @@ namespace SupportApp.Controllers
             return null;
         }
 
-        // POST: api/Ticket
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        //public async Task<ActionResult<Ticket>> PostTicket([FromBody] Ticket ticket) 
-        public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
-        {
-            try
-            {
-                _ticketService.CreateTicket(ticketAndTargetDto);
-                _context.SaveChangesAsync();
-                return Ok($"Ticket Create Successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return BadRequest("Create Ticket failed for BadRequest-C");
-            }
-        }
+
+
+        //[HttpPost]
+        //[Route("create-ticket",Name ="createTicket")]
+        //public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
+        //{
+        //    try
+        //    {
+        //        _ticketService.CreateTicket(ticketAndTargetDto);
+        //        _context.SaveChangesAsync();
+        //        return Ok($"Ticket Create Successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //        return BadRequest("Create Ticket failed for BadRequest-C");
+        //    }
+        //}
 
         // DELETE: api/Ticket/5
         [HttpDelete("{id}")]
@@ -195,18 +195,18 @@ namespace SupportApp.Controllers
         //    return Ok("update status controller working");
         //}
 
-        [HttpPost("createTicketWithTarget")]
-        public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {
-            try {
-                _ticketService.CreateTicket(ticketAndTargetDto);
-                return Ok($"Ticket Create Successfully.");
+        //[HttpPost("createTicketWithTarget")]
+        //public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {
+        //    try {
+        //        _ticketService.CreateTicket(ticketAndTargetDto);
+        //        return Ok($"Ticket Create Successfully.");
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpGet("ticketStatus")]
         public IActionResult GetTicketStatusEnum()
@@ -342,22 +342,22 @@ namespace SupportApp.Controllers
 			return Ok(result);
 		}
 
-		// Pagination API
-		[HttpGet("getPaginationList/{Skip}/{Take}")]
-        public IActionResult GetPaginationList(int Skip, int Take)
-        {
+		//// Pagination API
+		//[HttpGet("getPaginationList/{Skip}/{Take}")]
+  //      public IActionResult GetPaginationList(int Skip, int Take)
+  //      {
 
-			try
-			{
-				var tickets = _ticketService.GetPaginationList(Skip, Take);
-				return Ok(tickets);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return StatusCode(500, "Server Response Error.");
-			}
-		}
+		//	try
+		//	{
+		//		var tickets = _ticketService.GetPaginationList(Skip, Take);
+		//		return Ok(tickets);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Console.WriteLine(ex);
+		//		return StatusCode(500, "Server Response Error.");
+		//	}
+		//}
 
 
         // Email List API
@@ -437,5 +437,77 @@ namespace SupportApp.Controllers
                 Data    = updateIssueData
             });
         }
-	}
+
+
+        //::::::::::::::::::::::::::::::::: Get all issue data 
+
+        [HttpGet]
+        [Route("getAllIssueData" , Name ="GetAllIssueData")]
+        public async Task<ActionResult> GetTicket()
+        {
+            try
+            {
+                var tickets = await _ticketInterface.GetAllIssueData();
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = true,
+                    Message = "Request response for get all issue data.",
+                    Data = tickets
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
+            }
+        }
+
+
+        //::::::::::::::::::::::::::::::::: Get all issues pagination data 
+
+        [HttpGet]
+        [Route("getAllIssueDataWithPagination")]
+        public async Task<IActionResult> GetTicketWithPagination(int take , int skip)
+        {
+            try
+            {
+                var ticketPaginationData = await _ticketInterface.GetAllIssueDataWithPagination(take , skip);
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = ticketPaginationData.Status,
+                    Message = ticketPaginationData.Message,
+                    Data = ticketPaginationData.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
+            }
+        }
+
+
+        //::::::::::::::::::::::::::::::::: Get single issues data
+
+        [HttpGet]
+        [Route("getIssueData")]
+        public async Task<IActionResult> GetIssueData(int issueId)
+        {
+            try
+            {
+                var issueData = await _ticketInterface.GetIssuedata(issueId);
+                return Ok(new ApiResponseDto<Ticket>
+                {
+                    Status = issueData.Status,
+                    Message = issueData.Message,
+                    Data = issueData.Data
+                });
+
+            }catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return StatusCode(500, "Server Error");
+            }
+        }
+    }
 }
