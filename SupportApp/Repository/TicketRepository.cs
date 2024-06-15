@@ -15,19 +15,15 @@ namespace SupportApp.Repository
             _globalFileUploadInterface = globalFileUploadInterface;
         }
 
-        public class TicketResponse
-        {
-            public Ticket Ticket { get; set; }
-            public string Message { get; set; }
-        }
-
         //::::::::::::::::::::::::::::: Get All Issue data 
 
-        public async Task<IEnumerable<Ticket>> GetAllIssueData() {
-            try {
+        public async Task<IEnumerable<Ticket>> GetAllIssueData()
+        {
+            try
+            {
                 var allDataFromIssueList = await _context.Ticket
                     .OrderByDescending(data => data.CreatedAt)
-                    .Where(data=> data.Status < TicketStatus.Deleted && data.IsEmail==false)
+                    .Where(data => data.Status < TicketStatus.Deleted && data.IsEmail == false)
                     .ToListAsync();
 
 
@@ -165,31 +161,60 @@ namespace SupportApp.Repository
                     return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = false };
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Id Invalid", Status = false };
             }
         }
-
+        //:::::::::::::::::::: get single issue data 
         public async Task<ApiResponseDto<Ticket>> GetIssuedata(int issueId)
         {
             try
             {
                 if (issueId != null)
                 {
-                    var issueData = await _context.Ticket.FirstOrDefaultAsync(issue=>issue.Id==issueId);
-                    return new ApiResponseDto<Ticket> { Data = issueData, Message = "Issue Data found" ,Status=true};
+                    var issueData = await _context.Ticket.FirstOrDefaultAsync(issue => issue.Id == issueId);
+                    return new ApiResponseDto<Ticket> { Data = issueData, Message = "Issue Data found", Status = true };
                 }
                 else
                 {
-                    return new ApiResponseDto<Ticket> { Data = null, Message = "Issue Data not found", Status=true};
+                    return new ApiResponseDto<Ticket> { Data = null, Message = "Issue Data not found", Status = true };
                 }
 
-            }catch(Exception ex) { 
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.ToString());
                 return new ApiResponseDto<Ticket> { Data = null, Message = "Issue Id Invalid", Status = false };
             }
+        }
+
+
+        //::::::::::::::::::::: delete issue data 
+
+        public async Task<ApiResponseDto<Ticket>> DeleteIssue(int issueId)
+        {
+            try
+            {
+                if (issueId != null)
+                {
+                    var issueData = await _context.Ticket.FirstOrDefaultAsync(ticket => ticket.Id==issueId);
+                    
+                    issueData.Status = TicketStatus.Deleted;
+                    await _context.SaveChangesAsync();
+                    return new ApiResponseDto<Ticket> { Data = issueData, Message = "Deleted Successfully", Status = true };
+                }
+                else
+                {
+                    return new ApiResponseDto<Ticket> { Data = null, Message = "Issue data null", Status = true };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<Ticket> { Status = false, Message = "Delete operation invalid.", Data = null };
+            }
+            
         }
     }
 }

@@ -79,52 +79,52 @@ namespace SupportApp.Controllers
 
         // GET: api/Ticket/5
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(int id)
-        {
-          if (_context.Ticket == null)
-          {
-              return NotFound();
-          }
-            var ticket = await _context.Ticket.FindAsync(id);
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Ticket>> GetTicket(int id)
+        //{
+        //  if (_context.Ticket == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    var ticket = await _context.Ticket.FindAsync(id);
 
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-            return ticket;
-        }
+        //    if (ticket == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return ticket;
+        //}
 
         // PUT: api/Ticket/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async  Task<IActionResult> PutTicket(int id, Ticket ticket)
-        {
-            try
-            {
-                if (id != ticket.Id)
-                {
-                    return NotFound();
-                }
+        //[HttpPut("{id}")]
+        //public async  Task<IActionResult> PutTicket(int id, Ticket ticket)
+        //{
+        //    try
+        //    {
+        //        if (id != ticket.Id)
+        //        {
+        //            return NotFound();
+        //        }
 
-                var ticketdata =await _context.Ticket.FindAsync(id);
+        //        var ticketdata =await _context.Ticket.FindAsync(id);
 
-                if (ticketdata != null) {
-                ticketdata.Status = ticket.Status;
-                await _context.SaveChangesAsync();
-                }
+        //        if (ticketdata != null) {
+        //        ticketdata.Status = ticket.Status;
+        //        await _context.SaveChangesAsync();
+        //        }
 
 
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        throw;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
 
 
@@ -145,25 +145,8 @@ namespace SupportApp.Controllers
         //    }
         //}
 
-        // DELETE: api/Ticket/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket(int id)
-        {
-            if (_context.Ticket == null)
-            {
-                return NotFound("No Ticket found in the database.");
-            }
-            var ticket = await _context.Ticket.FindAsync(id);
-            if (ticket == null)
-            {
-                return NotFound("This Ticket is already deleted or No record found. ");
-            }
-
-            ticket.Status = TicketStatus.Deleted;
-            //_context.Ticket.Remove(ticket);
-            await _context.SaveChangesAsync();
-            return Ok($"Ticket deleted successfully.");
-        }
+        
+       
 
         private bool TicketExists(int id)
         {
@@ -398,51 +381,13 @@ namespace SupportApp.Controllers
 
 
 
-        //:::::::::::::::::::::::::::::::: Raised Issue
-        [HttpPost]
-        [Route("raised-issue" , Name ="raisedIssueController")]
-        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto)
-        {
-            try
-            {
-                Debug.WriteLine(ticketAndTargetDto);
-                
-                var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
-                return Ok(new ApiResponseDto<string>
-                {
-                    Status = true,
-                    Message = "Request successfull.",
-                    Data = responseData
-                });
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-
-        //::::::::::::::::::::::::::::::::: Update Issue
-        [HttpPut]
-        [Route("update-attachment-issue",Name = "updateIssueController")]
-        public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
-        {
-            var updateIssueData =await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
-
-            return Ok(new ApiResponseDto<string>
-            {
-                Status  =true,
-                Message ="Issue Data Updated Successfully .",
-                Data    = updateIssueData
-            });
-        }
 
 
         //::::::::::::::::::::::::::::::::: Get all issue data 
 
         [HttpGet]
-        [Route("getAllIssueData" , Name ="GetAllIssueData")]
+        [Route("get-all-issue-data" , Name ="GetAllIssueData")]
         public async Task<ActionResult> GetTicket()
         {
             try
@@ -466,7 +411,7 @@ namespace SupportApp.Controllers
         //::::::::::::::::::::::::::::::::: Get all issues pagination data 
 
         [HttpGet]
-        [Route("getAllIssueDataWithPagination")]
+        [Route("get-all-issue-data-with-pagination")]
         public async Task<IActionResult> GetTicketWithPagination(int take , int skip)
         {
             try
@@ -490,7 +435,7 @@ namespace SupportApp.Controllers
         //::::::::::::::::::::::::::::::::: Get single issues data
 
         [HttpGet]
-        [Route("getIssueData")]
+        [Route("get-issue-data")]
         public async Task<IActionResult> GetIssueData(int issueId)
         {
             try
@@ -508,6 +453,72 @@ namespace SupportApp.Controllers
                 Console.WriteLine($"{ex.Message}");
                 return StatusCode(500, "Server Error");
             }
+        }
+
+
+        //:::::::::::::::::::::::::::::::: Raised Issue
+        [HttpPost]
+        [Route("raised-issue", Name = "raisedIssueController")]
+        public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto)
+        {
+            try
+            {
+                Debug.WriteLine(ticketAndTargetDto);
+
+                var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
+
+                return Ok(new ApiResponseDto<string>
+                {
+                    Status = true,
+                    Message = "Request successfull.",
+                    Data = responseData
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        //::::::::::::::::::::::::::::::::: Update Issue
+        [HttpPut]
+        [Route("update-attachment-issue", Name = "updateIssueController")]
+        public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
+        {
+            var updateIssueData = await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
+
+            return Ok(new ApiResponseDto<string>
+            {
+                Status = true,
+                Message = "Issue Data Updated Successfully .",
+                Data = updateIssueData
+            });
+        }
+
+        // ::::::::::::::::::::::::::: Delete issue 
+
+        [HttpDelete("{id}")]
+        [Route("delete-issue")]
+        public async Task<IActionResult> DeleteTicket(int issueId)
+        {
+            try
+            {
+                if (issueId != null && issueId > 0)
+                {
+                    var response = await _ticketInterface.DeleteIssue(issueId);
+                    return Ok(new ApiResponseDto<Ticket> { Status = true, Message = response.Message, Data = response.Data });
+                }
+                else
+                {
+                    return Ok(new ApiResponseDto<string> { Status = true, Message = "Delete request response.", Data = "Issue not found." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Server Response Error.");
+            }
+
         }
     }
 }
