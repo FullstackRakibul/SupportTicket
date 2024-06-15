@@ -216,5 +216,17 @@ namespace SupportApp.Repository
             }
             
         }
+
+        //:::::::::::::::::  user Created Issue List
+
+        public async Task<ApiResponseDto<List<Ticket>>> UserCreatedIssueList(string EmpCode)
+        {
+            var userIssueData = await _context.Ticket.Where(data => data.CreatedBy == EmpCode).ToListAsync();
+            if (userIssueData.Count() > 0  && userIssueData !=null) {
+                return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created Issue list", Data = userIssueData };
+
+            }
+            return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created Issue list", Data = userIssueData };
+        }
     }
 }

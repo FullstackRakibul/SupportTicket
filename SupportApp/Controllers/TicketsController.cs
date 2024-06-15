@@ -255,30 +255,6 @@ namespace SupportApp.Controllers
 
 
 
-        //------------------------------------------- employee routes apis................
-
-        // get ticket list by ticket creator ID
-        [HttpGet("getTicketByCreator/{EmpCode}")]
-        public async Task<ActionResult<Ticket>> GetTicketByCreator(string EmpCode)
-        {
-            try
-            {
-                var ticketDetails = await _context.Ticket
-                .Where(t => t.CreatedBy == EmpCode)
-                .ToListAsync();
-                if (ticketDetails == null)
-                {
-                    return NotFound(); 
-                }
-
-                return Ok(ticketDetails);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return StatusCode(500);
-            }
-        }
 
 		// get ticket list by ticket creator ID
 		[HttpGet("getAcknowledgeTicketByCreator/{EmpCode}")]
@@ -482,43 +458,68 @@ namespace SupportApp.Controllers
 
 
         //::::::::::::::::::::::::::::::::: Update Issue
-        [HttpPut]
-        [Route("update-attachment-issue", Name = "updateIssueController")]
-        public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
-        {
-            var updateIssueData = await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
+        //[HttpPut("updateIssue1")]
+        //[Route("update-attachment-issue", Name = "updateIssueController")]
+        //public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
+        //{
+        //    var updateIssueData = await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
 
-            return Ok(new ApiResponseDto<string>
-            {
-                Status = true,
-                Message = "Issue Data Updated Successfully .",
-                Data = updateIssueData
-            });
-        }
+        //    return Ok(new ApiResponseDto<string>
+        //    {
+        //        Status = true,
+        //        Message = "Issue Data Updated Successfully .",
+        //        Data = updateIssueData
+        //    });
+        //}
 
         // ::::::::::::::::::::::::::: Delete issue 
 
-        [HttpDelete("{id}")]
-        [Route("delete-issue")]
-        public async Task<IActionResult> DeleteTicket(int issueId)
-        {
-            try
-            {
-                if (issueId != null && issueId > 0)
-                {
-                    var response = await _ticketInterface.DeleteIssue(issueId);
-                    return Ok(new ApiResponseDto<Ticket> { Status = true, Message = response.Message, Data = response.Data });
-                }
-                else
-                {
-                    return Ok(new ApiResponseDto<string> { Status = true, Message = "Delete request response.", Data = "Issue not found." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Server Response Error.");
-            }
+        //[HttpDelete("deleteIssue")]
+        //[Route("delete-issue")]
+        //public async Task<IActionResult> DeleteTicket(int issueId)
+        //{
+        //    try
+        //    {
+        //        if (issueId != null && issueId > 0)
+        //        {
+        //            var response = await _ticketInterface.DeleteIssue(issueId);
+        //            return Ok(new ApiResponseDto<Ticket> { Status = true, Message = response.Message, Data = response.Data });
+        //        }
+        //        else
+        //        {
+        //            return Ok(new ApiResponseDto<string> { Status = true, Message = "Delete request response.", Data = "Issue not found." });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Server Response Error.");
+        //    }
 
-        }
+        //}
+
+
+
+        // userwise ticket 
+
+        //[HttpGet("getIssueByCreator")]
+        //[Route("user-created-issue", Name = "createdByUser")]
+        //public async Task<IActionResult> GetIssueByCreator(string EmpCode)
+        //{
+        //    try
+        //    {
+        //        var userCreatedIssueData = await _ticketInterface.UserCreatedIssueList(EmpCode);
+        //        if (userCreatedIssueData != null)
+        //        {
+        //            return Ok(new ApiResponseDto<List<Ticket>> { Status = userCreatedIssueData.Status, Message = userCreatedIssueData.Message, Data = userCreatedIssueData.Data });
+        //        }
+        //        return Ok(new ApiResponseDto<List<Ticket>> { Status = userCreatedIssueData.Status, Message = userCreatedIssueData.Message, Data = userCreatedIssueData.Data });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Server Error");
+        //    }
+
+
+        //}
     }
 }

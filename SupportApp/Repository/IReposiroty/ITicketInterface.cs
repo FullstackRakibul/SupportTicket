@@ -12,5 +12,6 @@ namespace SupportApp.Repository.IReposiroty
         Task<string> RaisedIssueWithAttachment(TicketAndTargetDto ticketAndTargetDto);
         Task<string> UpdateRaisedIssueWithAttachment(TicketAndTargetDto ticketAndTargetDto);
         Task<ApiResponseDto<Ticket>> DeleteIssue(int issueId);
+        Task<ApiResponseDto<List<Ticket>>> UserCreatedIssueList(string EmpCode);
     }
 }
