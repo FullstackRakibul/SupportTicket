@@ -9,7 +9,7 @@ using SupportApp.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
-using BCrypt.Net;
+
 using SupportApp.DTO;
 
 namespace SupportApp.Controllers
@@ -79,23 +79,8 @@ namespace SupportApp.Controllers
 
         private Agent AuthenticateUser(Agent agent)
         {
-            Agent _agent = null;
-            var userFromDb = _dbContext.Agent
-         .FirstOrDefault(a => a.Username == agent.Username);
-
-            if (userFromDb != null && BCrypt.Net.BCrypt.Verify(agent.Password, userFromDb.Password))
-            {
-                _agent = new Agent
-                {
-                    Username = userFromDb.Username,
-                    role = userFromDb.role,
-                    PhoneExtension = userFromDb.PhoneExtension,
-                };
-
-            }
-            
-
-            return _agent;
+           
+            return null;
         }
 
 
@@ -180,7 +165,6 @@ namespace SupportApp.Controllers
                     Email = agentRegistrationDto.Email,
                     EmpCode = agentRegistrationDto.EmpCode,
                     PhoneExtension = agentRegistrationDto.PhoneExtension,
-                    Password = BCrypt.Net.BCrypt.HashPassword(agentRegistrationDto.Password),
                 };
 
                 await _dbContext.AddAsync(agentUser);
