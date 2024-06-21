@@ -41,21 +41,21 @@ namespace SupportApp.Controllers
         }
 
         // GET: api/Ticket
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicket()
-        {
-          try
-          {
-              var tickets = await _context.Ticket.Where(ticket => ticket.Status != TicketStatus.Deleted).OrderByDescending(ticket => ticket.CreatedAt)
-               .ToListAsync();
-                return tickets;
-          }
-          catch (Exception ex)
-          {
-              Console.WriteLine(ex);
-              return StatusCode(500, "Server Response Error.");
-          }
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Ticket>>> GetTicket()
+        //{
+        //  try
+        //  {
+        //      var tickets = await _context.Ticket.Where(ticket => ticket.Status < TicketStatus.Deleted).OrderByDescending(ticket => ticket.CreatedAt)
+        //       .ToListAsync();
+        //        return tickets;
+        //  }
+        //  catch (Exception ex)
+        //  {
+        //      Console.WriteLine(ex);
+        //      return StatusCode(500, "Server Response Error.");
+        //  }
+        //}
 
 
         [HttpGet("getTicketFromMail")]
@@ -79,91 +79,74 @@ namespace SupportApp.Controllers
 
         // GET: api/Ticket/5
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(int id)
-        {
-          if (_context.Ticket == null)
-          {
-              return NotFound();
-          }
-            var ticket = await _context.Ticket.FindAsync(id);
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Ticket>> GetTicket(int id)
+        //{
+        //  if (_context.Ticket == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    var ticket = await _context.Ticket.FindAsync(id);
 
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-            return ticket;
-        }
+        //    if (ticket == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return ticket;
+        //}
 
         // PUT: api/Ticket/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async  Task<IActionResult> PutTicket(int id, Ticket ticket)
-        {
-            try
-            {
-                if (id != ticket.Id)
-                {
-                    return NotFound();
-                }
+        //[HttpPut("{id}")]
+        //public async  Task<IActionResult> PutTicket(int id, Ticket ticket)
+        //{
+        //    try
+        //    {
+        //        if (id != ticket.Id)
+        //        {
+        //            return NotFound();
+        //        }
 
-                var ticketdata =await _context.Ticket.FindAsync(id);
+        //        var ticketdata =await _context.Ticket.FindAsync(id);
 
-                if (ticketdata != null) {
-                ticketdata.Status = ticket.Status;
-                await _context.SaveChangesAsync();
-                }
+        //        if (ticketdata != null) {
+        //        ticketdata.Status = ticket.Status;
+        //        await _context.SaveChangesAsync();
+        //        }
 
 
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        throw;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        // POST: api/Ticket
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        //public async Task<ActionResult<Ticket>> PostTicket([FromBody] Ticket ticket) 
-        public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
-        {
-            try
-            {
-                _ticketService.CreateTicket(ticketAndTargetDto);
-                _context.SaveChangesAsync();
-                return Ok($"Ticket Create Successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return BadRequest("Create Ticket failed for BadRequest-C");
-            }
-        }
 
-        // DELETE: api/Ticket/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket(int id)
-        {
-            if (_context.Ticket == null)
-            {
-                return NotFound("No Ticket found in the database.");
-            }
-            var ticket = await _context.Ticket.FindAsync(id);
-            if (ticket == null)
-            {
-                return NotFound("This Ticket is already deleted or No record found. ");
-            }
 
-            ticket.Status = TicketStatus.Deleted;
-            //_context.Ticket.Remove(ticket);
-            await _context.SaveChangesAsync();
-            return Ok($"Ticket deleted successfully.");
-        }
+        //[HttpPost]
+        //[Route("create-ticket",Name ="createTicket")]
+        //public IActionResult CreateTicket([FromBody] TicketAndTargetDto ticketAndTargetDto)
+        //{
+        //    try
+        //    {
+        //        _ticketService.CreateTicket(ticketAndTargetDto);
+        //        _context.SaveChangesAsync();
+        //        return Ok($"Ticket Create Successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //        return BadRequest("Create Ticket failed for BadRequest-C");
+        //    }
+        //}
+
+        
+       
 
         private bool TicketExists(int id)
         {
@@ -195,18 +178,18 @@ namespace SupportApp.Controllers
         //    return Ok("update status controller working");
         //}
 
-        [HttpPost("createTicketWithTarget")]
-        public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {
-            try {
-                _ticketService.CreateTicket(ticketAndTargetDto);
-                return Ok($"Ticket Create Successfully.");
+        //[HttpPost("createTicketWithTarget")]
+        //public async Task<ActionResult<Ticket>> createTicketWithTarget([FromBody] TicketAndTargetDto ticketAndTargetDto) {
+        //    try {
+        //        _ticketService.CreateTicket(ticketAndTargetDto);
+        //        return Ok($"Ticket Create Successfully.");
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpGet("ticketStatus")]
         public IActionResult GetTicketStatusEnum()
@@ -272,30 +255,6 @@ namespace SupportApp.Controllers
 
 
 
-        //------------------------------------------- employee routes apis................
-
-        // get ticket list by ticket creator ID
-        [HttpGet("getTicketByCreator/{EmpCode}")]
-        public async Task<ActionResult<Ticket>> GetTicketByCreator(string EmpCode)
-        {
-            try
-            {
-                var ticketDetails = await _context.Ticket
-                .Where(t => t.CreatedBy == EmpCode)
-                .ToListAsync();
-                if (ticketDetails == null)
-                {
-                    return NotFound(); 
-                }
-
-                return Ok(ticketDetails);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return StatusCode(500);
-            }
-        }
 
 		// get ticket list by ticket creator ID
 		[HttpGet("getAcknowledgeTicketByCreator/{EmpCode}")]
@@ -342,22 +301,22 @@ namespace SupportApp.Controllers
 			return Ok(result);
 		}
 
-		// Pagination API
-		[HttpGet("getPaginationList/{Skip}/{Take}")]
-        public IActionResult GetPaginationList(int Skip, int Take)
-        {
+		//// Pagination API
+		//[HttpGet("getPaginationList/{Skip}/{Take}")]
+  //      public IActionResult GetPaginationList(int Skip, int Take)
+  //      {
 
-			try
-			{
-				var tickets = _ticketService.GetPaginationList(Skip, Take);
-				return Ok(tickets);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return StatusCode(500, "Server Response Error.");
-			}
-		}
+		//	try
+		//	{
+		//		var tickets = _ticketService.GetPaginationList(Skip, Take);
+		//		return Ok(tickets);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Console.WriteLine(ex);
+		//		return StatusCode(500, "Server Response Error.");
+		//	}
+		//}
 
 
         // Email List API
@@ -398,15 +357,90 @@ namespace SupportApp.Controllers
 
 
 
+
+
+
+        //::::::::::::::::::::::::::::::::: Get all issue data 
+
+        [HttpGet]
+        [Route("get-all-issue-data" , Name ="GetAllIssueData")]
+        public async Task<ActionResult> GetTicket()
+        {
+            try
+            {
+                var tickets = await _ticketInterface.GetAllIssueData();
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = true,
+                    Message = "Request response for get all issue data.",
+                    Data = tickets
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
+            }
+        }
+
+
+        //::::::::::::::::::::::::::::::::: Get all issues pagination data 
+
+        [HttpGet]
+        [Route("get-all-issue-data-with-pagination/page={page}&size={size}")]
+        public async Task<IActionResult> GetTicketWithPagination(int page, int size)
+        {
+            try
+            {
+                var ticketPaginationData = await _ticketInterface.GetAllIssueDataWithPagination(page , size);
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = ticketPaginationData.Status,
+                    Message = ticketPaginationData.Message,
+                    Data = ticketPaginationData.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
+            }
+        }
+
+
+        //::::::::::::::::::::::::::::::::: Get single issues data
+
+        [HttpGet]
+        [Route("get-issue-data")]
+        public async Task<IActionResult> GetIssueData(int issueId)
+        {
+            try
+            {
+                var issueData = await _ticketInterface.GetIssuedata(issueId);
+                return Ok(new ApiResponseDto<Ticket>
+                {
+                    Status = issueData.Status,
+                    Message = issueData.Message,
+                    Data = issueData.Data
+                });
+
+            }catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return StatusCode(500, "Server Error");
+            }
+        }
+
+
         //:::::::::::::::::::::::::::::::: Raised Issue
         [HttpPost]
-        [Route("raised-issue" , Name ="raisedIssueController")]
+        [Route("raised-issue", Name = "raisedIssueController")]
         public async Task<ActionResult> RaisedIssueWithAttachment([FromForm] TicketAndTargetDto ticketAndTargetDto)
         {
             try
             {
                 Debug.WriteLine(ticketAndTargetDto);
-                
+
                 var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
                 return Ok(new ApiResponseDto<string>
@@ -416,7 +450,7 @@ namespace SupportApp.Controllers
                     Data = responseData
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -424,18 +458,68 @@ namespace SupportApp.Controllers
 
 
         //::::::::::::::::::::::::::::::::: Update Issue
-        [HttpPut]
-        [Route("update-attachment-issue",Name = "updateIssueController")]
-        public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
-        {
-            var updateIssueData =await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
+        //[HttpPut("updateIssue1")]
+        //[Route("update-attachment-issue", Name = "updateIssueController")]
+        //public async Task<IActionResult> UpdateIssue(TicketAndTargetDto ticketAndTargetDto)
+        //{
+        //    var updateIssueData = await _ticketInterface.UpdateRaisedIssueWithAttachment(ticketAndTargetDto);
 
-            return Ok(new ApiResponseDto<string>
-            {
-                Status  =true,
-                Message ="Issue Data Updated Successfully .",
-                Data    = updateIssueData
-            });
-        }
-	}
+        //    return Ok(new ApiResponseDto<string>
+        //    {
+        //        Status = true,
+        //        Message = "Issue Data Updated Successfully .",
+        //        Data = updateIssueData
+        //    });
+        //}
+
+        // ::::::::::::::::::::::::::: Delete issue 
+
+        //[HttpDelete("deleteIssue")]
+        //[Route("delete-issue")]
+        //public async Task<IActionResult> DeleteTicket(int issueId)
+        //{
+        //    try
+        //    {
+        //        if (issueId != null && issueId > 0)
+        //        {
+        //            var response = await _ticketInterface.DeleteIssue(issueId);
+        //            return Ok(new ApiResponseDto<Ticket> { Status = true, Message = response.Message, Data = response.Data });
+        //        }
+        //        else
+        //        {
+        //            return Ok(new ApiResponseDto<string> { Status = true, Message = "Delete request response.", Data = "Issue not found." });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Server Response Error.");
+        //    }
+
+        //}
+
+
+
+        // userwise ticket 
+
+        //[HttpGet("getIssueByCreator")]
+        //[Route("user-created-issue", Name = "createdByUser")]
+        //public async Task<IActionResult> GetIssueByCreator(string EmpCode)
+        //{
+        //    try
+        //    {
+        //        var userCreatedIssueData = await _ticketInterface.UserCreatedIssueList(EmpCode);
+        //        if (userCreatedIssueData != null)
+        //        {
+        //            return Ok(new ApiResponseDto<List<Ticket>> { Status = userCreatedIssueData.Status, Message = userCreatedIssueData.Message, Data = userCreatedIssueData.Data });
+        //        }
+        //        return Ok(new ApiResponseDto<List<Ticket>> { Status = userCreatedIssueData.Status, Message = userCreatedIssueData.Message, Data = userCreatedIssueData.Data });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Server Error");
+        //    }
+
+
+        //}
+    }
 }

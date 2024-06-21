@@ -54,9 +54,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // JWT 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyAllowSpecificOrigins",
+        builder =>
+        {
+            builder.WithOrigins("http://192.168.0.11:9999",
+                                "http://localhost:5173", 
+                                "http://192.168.0.12:50002", 
+                                "http://192.168.0.13")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
+
 var app = builder.Build();
 
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -71,8 +89,9 @@ else {
 
 // jwt service
 app.UseAuthentication();
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<ReviewHub>("/reviewHub").RequireCors("Open");
+app.MapHub<ReviewHub>("/reviewHub").RequireCors("Open").RequireCors("MyAllowSpecificOrigins"); ;
 app.Run();
