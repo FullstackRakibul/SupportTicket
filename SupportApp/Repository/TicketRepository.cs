@@ -151,7 +151,6 @@ namespace SupportApp.Repository
 
                 var issueData = await _context.Ticket
                         .OrderByDescending(data => data.CreatedAt)
-                        //.Where(data=>data.Attachment)
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
