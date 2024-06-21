@@ -387,12 +387,12 @@ namespace SupportApp.Controllers
         //::::::::::::::::::::::::::::::::: Get all issues pagination data 
 
         [HttpGet]
-        [Route("get-all-issue-data-with-pagination")]
-        public async Task<IActionResult> GetTicketWithPagination(int take , int skip)
+        [Route("get-all-issue-data-with-pagination/page={page}&size={size}")]
+        public async Task<IActionResult> GetTicketWithPagination(int page, int size)
         {
             try
             {
-                var ticketPaginationData = await _ticketInterface.GetAllIssueDataWithPagination(take , skip);
+                var ticketPaginationData = await _ticketInterface.GetAllIssueDataWithPagination(page , size);
                 return Ok(new ApiResponseDto<IEnumerable<Ticket>>
                 {
                     Status = ticketPaginationData.Status,

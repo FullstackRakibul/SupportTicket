@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SupportApp.Models;
 
@@ -11,9 +12,10 @@ using SupportApp.Models;
 namespace SupportApp.Migrations
 {
     [DbContext(typeof(SupportAppDbContext))]
-    partial class SupportAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240621103932_terget table D&U change")]
+    partial class tergettableDUchange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -471,7 +473,7 @@ namespace SupportApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TicketTypeId")
+                    b.Property<int>("TicketTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -632,7 +634,9 @@ namespace SupportApp.Migrations
                 {
                     b.HasOne("SupportApp.Models.TicketType", "TicketType")
                         .WithMany("Tickets")
-                        .HasForeignKey("TicketTypeId");
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TicketType");
                 });

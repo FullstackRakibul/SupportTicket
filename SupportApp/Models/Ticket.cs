@@ -26,7 +26,7 @@ namespace SupportApp.Models
         public TicketStatus Status { get; set; } = TicketStatus.Open;
         public TicketPriority Priority { get; set; } = TicketPriority.Regular;
         
-        public int TicketTypeId { get; set; }
+        public int? TicketTypeId { get; set; }
         public TicketType? TicketType { get; set; }
        public Target? Target { get; set; }
 

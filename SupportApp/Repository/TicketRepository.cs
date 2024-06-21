@@ -53,7 +53,7 @@ namespace SupportApp.Repository
                     Priority = TicketPriority.Regular,
                     Status = TicketStatus.Open,
                     IsEmail = false,
-                    TicketTypeId = ticketAndTargetDto.TicketTypeId,
+                    TicketTypeId = ticketAndTargetDto.TicketTypeId??1,
                     UpdatedAt = null,
 
                 };
@@ -83,8 +83,8 @@ namespace SupportApp.Repository
                 var assignTargetData = new Target
                 {
                     TicketId = raisedIssueData.Id,
-                    DepartmentId = ticketAndTargetDto.DepartmentId,
-                    UnitId = ticketAndTargetDto.UnitId,
+                    DepartmentId = ticketAndTargetDto.DepartmentId ?? 1,
+                    UnitId = ticketAndTargetDto.UnitId??1,
                 };
                 _context.Target.Add(assignTargetData);
                 await _context.SaveChangesAsync();
@@ -138,28 +138,26 @@ namespace SupportApp.Repository
 
 
         // ::::::::::::::::::  get all issue data form pagination
-        public async Task<ApiResponseDto<IEnumerable<Ticket>>> GetAllIssueDataWithPagination(int take, int skip)
+
+        public async Task<ApiResponseDto<IEnumerable<Ticket>>> GetAllIssueDataWithPagination(int page, int size)
         {
             try
             {
-                if (take > 0 && skip > 0)
-                {
-                    var issueData = await _context.Ticket
+                page = page > 0 ? page : 1;
+                size = size > 0 ? size : 10;
+
+                int skip = (page - 1) * size;
+                int take = size;
+
+                var issueData = await _context.Ticket
                         .OrderByDescending(data => data.CreatedAt)
-                        .Take(take)
+                        //.Where(data=>data.Attachment)
                         .Skip(skip)
-                        .ToArrayAsync();
-                    return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = false };
-                }
-                else
-                {
-                    var issueData = await _context.Ticket
-                        .OrderByDescending(data => data.CreatedAt)
                         .Take(take)
-                        .Skip(0)
-                        .ToArrayAsync();
-                    return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = false };
-                }
+                        .ToListAsync();
+                
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
+
             }
             catch (Exception ex)
             {
