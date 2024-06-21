@@ -145,11 +145,11 @@ namespace SupportApp.Repository
             {
                 page = page > 0 ? page : 1;
                 size = size > 0 ? size : 10;
-
                 int skip = (page - 1) * size;
                 int take = size;
 
                 var issueData = await _context.Ticket
+                        .Where(data => data.Status < TicketStatus.Deleted && data.IsEmail == false)
                         .OrderByDescending(data => data.CreatedAt)
                         .Skip(skip)
                         .Take(take)
@@ -164,6 +164,36 @@ namespace SupportApp.Repository
                 return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Id Invalid", Status = false };
             }
         }
+
+
+        // ::::::::::::::::::  get all mail issue data form pagination
+
+        public async Task<ApiResponseDto<IEnumerable<Ticket>>> GetAllMailIssueDataWithPagination(int page, int size)
+        {
+            try
+            {
+                page = page > 0 ? page : 1;
+                size = size > 0 ? size : 10;
+                int skip = (page - 1) * size;
+                int take = size;
+
+                var issueData = await _context.Ticket
+                        .Where(data => data.Status < TicketStatus.Deleted && data.IsEmail == true)
+                        .OrderByDescending(data => data.CreatedAt)
+                        .Skip(skip)
+                        .Take(take)
+                        .ToListAsync();
+
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Id Invalid", Status = false };
+            }
+        }
+
         //:::::::::::::::::::: get single issue data 
         public async Task<ApiResponseDto<Ticket>> GetIssuedata(int issueId)
         {
