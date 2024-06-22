@@ -6,12 +6,12 @@ namespace SupportApp.DTO
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         public IFormFile? Attachment { get; set; }
 		public bool? IsEmail { get; set; }
         public string? FromEmail { get; set; }
         public string? EmailCc { get; set; }
-        public int? UpdatedBy { get; set; }
+        public int UpdatedBy { get; set; }
         public string? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedAt { get; set; }
@@ -21,14 +21,14 @@ namespace SupportApp.DTO
 
         // Add other properties for Ticket
         public int TicketId { get; set; }
-        public int? AgentId { get; set; }
-        public int? DepartmentId { get; set; }
-        public int? UnitId { get; set; }
+        public int AgentId { get; set; }
+        public int DepartmentId { get; set; }
+        public int UnitId { get; set; }
         public string? Objective { get; set; }
 
         // add proparties for Notification 
-		public bool IsRead { get; set; }
-		public string Message { get; set; } = "A new issue has been raised.";
+		public bool? IsRead { get; set; }
+		public string? Message { get; set; } = "A new issue has been raised.";
 		public int TargetId { get; set; }
 
 
