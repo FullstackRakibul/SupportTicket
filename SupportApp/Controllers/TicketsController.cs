@@ -16,6 +16,8 @@ using SupportApp.Repository.IReposiroty;
 using SupportApp.Repository;
 using Org.BouncyCastle.Asn1.Mozilla;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Drawing;
 
 namespace SupportApp.Controllers
 {
@@ -57,25 +59,6 @@ namespace SupportApp.Controllers
         //  }
         //}
 
-
-        [HttpGet("getTicketFromMail")]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicketFromMail()
-        {
-            try
-            {
-                //var tickets = await _context.Ticket.Where(ticket => ticket.Status != TicketStatus.Deleted && ticket.IsEmail == true).ToListAsync();
-                var tickets = await _context.Ticket
-               .Where(ticket => ticket.Status != TicketStatus.Deleted && ticket.IsEmail == true)
-               .OrderByDescending(ticket => ticket.Status)
-               .ToListAsync();
-                return tickets;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return StatusCode(500, "Server Response Error.");
-            }
-        }
 
         // GET: api/Ticket/5
 
@@ -521,5 +504,28 @@ namespace SupportApp.Controllers
 
 
         //}
+
+
+        //::::::::::::::::::  get all mail ticket pagination
+
+        [HttpGet("get-mail-ticket/page={page}&size={size}")]
+        public async Task<IActionResult> GetTicketFromMail(int page , int size)
+        {
+            try
+            {
+                var mailTicketPaginationData = await _ticketInterface.GetAllMailIssueDataWithPagination(page, size);
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = mailTicketPaginationData.Status,
+                    Message = mailTicketPaginationData.Message,
+                    Data = mailTicketPaginationData.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
+            }
+        }
     }
 }
