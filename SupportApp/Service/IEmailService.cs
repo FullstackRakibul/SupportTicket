@@ -1,9 +1,10 @@
-﻿using SupportApp.Helper;
+﻿using SupportApp.DTO;
+using SupportApp.Helper;
 
 namespace SupportApp.Service
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(Mailrequest mailrequest);
+        Task<ApiResponseDto<string>> CreateMailTicket(Mailrequest mailrequest);
     }
 }
