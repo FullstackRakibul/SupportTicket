@@ -53,21 +53,12 @@ namespace SupportApp.Repository
 
         public async Task<IEnumerable<TaskItemDto>> GetTaskItemsInterface()
         {
-            //try
-            //{
-            //    var taskItemData = await _dbcontext.TaskItem.Where(data => data.Status < 5).ToListAsync();
-            //    return taskItemData;
-            //}
-            //catch (Exception ex)
-            //{
-            //    return Enumerable.Empty<TaskItem>();
-            //}
             var taskItems = await _dbcontext.TaskItem
             .Where(data => data.Status < 5)
+            .OrderByDescending(data => data.CreatedAt)
             .ToListAsync();
 
             var taskItemDtos = new List<TaskItemDto>();
-
             foreach (var taskItem in taskItems)
             {
                 var taskItemDto = new TaskItemDto
@@ -81,11 +72,8 @@ namespace SupportApp.Repository
                 };
                 taskItemDtos.Add(taskItemDto);
             }
-
             return taskItemDtos;
         }
-
-
 
         public async Task<TaskItemDto> TaskItemDetailsInterface(int id)
         {
@@ -123,8 +111,7 @@ namespace SupportApp.Repository
             .Where(agent => agent.EmpCode == empCode)
             .Select(agent => agent.Name)
             .FirstOrDefaultAsync();
-
-            return agentName ?? "Not assigned";
+            return agentName ?? "Not Define";
         }
 
 

@@ -2,6 +2,7 @@
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SupportApp.Repository
 {
@@ -42,13 +43,18 @@ namespace SupportApp.Repository
             try
             {
                 var generatedTicketNumber = GenerateTicketNumber();
+
+
+                var tokenData = await tokenDataRetrieve(ticketAndTargetDto.CreatedBy);
+
+
                 var raisedIssueData = new Ticket
                 {
                     Title = ticketAndTargetDto.Title,
                     TicketNumber = generatedTicketNumber,
                     Description = ticketAndTargetDto.Description,
                     CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    CreatedBy = ticketAndTargetDto.CreatedBy,
+                    CreatedBy = tokenData,
                     MessageId = generatedTicketNumber,
                     Priority = TicketPriority.Regular,
                     Status = TicketStatus.Open,
@@ -154,7 +160,12 @@ namespace SupportApp.Repository
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
-                
+
+                foreach (var item in issueData)
+                {
+                    item.Attachment = await GetFileDownloadLink(item.Id);
+                }
+
                 return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
 
             }
@@ -183,14 +194,17 @@ namespace SupportApp.Repository
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
-
+                foreach (var item in issueData)
+                {
+                    item.Attachment = await GetFileDownloadLink(item.Id);
+                }
                 return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Id Invalid", Status = false };
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Invalid", Status = false };
             }
         }
 
@@ -254,6 +268,77 @@ namespace SupportApp.Repository
 
             }
             return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created Issue list", Data = userIssueData };
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // :::::::::::: private repo 
+
+        public async Task<string> GetFileDownloadLink(int ticketId)
+        {
+            try
+            {
+                var fileDownloadLink = _context.GlobalFileUpload
+                    .Where(data=> data.TicketId == ticketId)
+                    .FirstOrDefault();
+
+                return fileDownloadLink.FilePathUrl?? "null";
+
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        // ::::::::::::: jwt token data Retrieve
+
+        public async Task<string> tokenDataRetrieve( string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentException("Token cannot be null or empty", nameof(token));
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            if (jsonToken == null)
+            {
+                throw new ArgumentException("Invalid token format", nameof(token));
+            }
+
+            var claims = jsonToken.Claims;
+            var empCode = claims.FirstOrDefault(claim => claim.Type == "EmpCode")?.Value;
+
+            if (string.IsNullOrEmpty(empCode))
+            {
+                throw new Exception("EmpCode claim not found in token");
+            }
+
+            return await Task.FromResult(empCode);
         }
     }
 }

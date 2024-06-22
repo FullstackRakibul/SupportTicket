@@ -422,7 +422,7 @@ namespace SupportApp.Controllers
         {
             try
             {
-                Debug.WriteLine(ticketAndTargetDto);
+               
 
                 var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
