@@ -194,17 +194,13 @@ namespace SupportApp.Repository
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
-                foreach (var item in issueData)
-                {
-                    item.Attachment = await GetFileDownloadLink(item.Id);
-                }
                 return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Invalid", Status = false };
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = null, Message = "Issue Id Invalid", Status = false };
             }
         }
 

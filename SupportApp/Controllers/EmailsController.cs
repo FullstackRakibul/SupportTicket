@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using SupportApp.DTO;
 using SupportApp.Helper;
 using SupportApp.Service;
 
@@ -23,32 +25,42 @@ namespace SupportApp.Controllers
             try {
                 var mailrequest = new Mailrequest();
                 mailrequest.ToEmail = "it@dhakawestern.com";
-                mailrequest.Subject = "Fetch Data test";
+                mailrequest.Subject = "Send mail test";
                 mailrequest.Body = "This is a test mail body for fetch data";
                 if (_emailService != null)
                 {
-                    await _emailService.SendEmailAsync(mailrequest);
-                    return Ok();
+                    await _emailService.CreateMailTicket(mailrequest);
+                    return Ok(new ApiResponseDto<string>
+                    {
+                        Status = true,
+                        Message = "Send Test Mail Success.",
+                        Data = mailrequest.ToJson()
+                    });
                 }
                 else {
-                    return BadRequest("a Bad request");
+                    return BadRequest("A Bad request");
                 }
             }
             catch (Exception ex) {
                 Console.WriteLine(ex);
-                throw;
+                return StatusCode(500);
             }
         }
-
-        [HttpPost("ComposeMail")]
-        public async Task<IActionResult> ComposeMail([FromBody] Mailrequest mailRequest)
+        
+        [HttpPost("create-mail-ticket")]
+        public async Task<IActionResult> ComposeMailTicket( Mailrequest mailRequest)
         {
             try
             {
                 if (mailRequest != null && _emailService != null)
                 {
-                    await _emailService.SendEmailAsync(mailRequest);
-                    return Ok("Mail send successfully.");
+                    var sendMailResponse = await _emailService.CreateMailTicket(mailRequest);
+                    return Ok(new ApiResponseDto<string>
+                    {
+                        Status= true,
+                        Message = sendMailResponse.Message,
+                        Data = sendMailResponse.Data,
+                    });
                 }
                 else
                 {
