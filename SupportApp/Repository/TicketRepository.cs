@@ -2,6 +2,7 @@
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
+using SupportApp.Service;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace SupportApp.Repository
@@ -10,6 +11,7 @@ namespace SupportApp.Repository
     {
         private readonly SupportAppDbContext _context;
         private readonly IGlobalFileUploadInterface _globalFileUploadInterface;
+        private readonly FromTokenData _fromTokenData;
         public TicketRepository(SupportAppDbContext context, IGlobalFileUploadInterface globalFileUploadInterface)
         {
             _context = context;
@@ -45,7 +47,7 @@ namespace SupportApp.Repository
                 var generatedTicketNumber = GenerateTicketNumber();
 
 
-                var tokenData = await tokenDataRetrieve(ticketAndTargetDto.CreatedBy);
+                //var tokenData = await _fromTokenData.tokenDataRetrieve(ticketAndTargetDto.CreatedBy);
 
 
                 var raisedIssueData = new Ticket
@@ -54,12 +56,12 @@ namespace SupportApp.Repository
                     TicketNumber = generatedTicketNumber,
                     Description = ticketAndTargetDto.Description,
                     CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    CreatedBy = tokenData,
+                    CreatedBy = ticketAndTargetDto.CreatedBy,
                     MessageId = generatedTicketNumber,
                     Priority = TicketPriority.Regular,
                     Status = TicketStatus.Open,
                     IsEmail = false,
-                    TicketTypeId = ticketAndTargetDto.TicketTypeId??1,
+                    TicketTypeId = ticketAndTargetDto.TicketTypeId ?? 1,
                     UpdatedAt = null,
 
                 };
@@ -90,7 +92,7 @@ namespace SupportApp.Repository
                 {
                     TicketId = raisedIssueData.Id,
                     DepartmentId = ticketAndTargetDto.DepartmentId ?? 1,
-                    UnitId = ticketAndTargetDto.UnitId??1,
+                    UnitId = ticketAndTargetDto.UnitId ?? 1,
                 };
                 _context.Target.Add(assignTargetData);
                 await _context.SaveChangesAsync();
@@ -139,6 +141,8 @@ namespace SupportApp.Repository
                 return "Ticket Data Not Exits.";
             }
 
+
+
             return "This is a update issue test.";
         }
 
@@ -160,13 +164,25 @@ namespace SupportApp.Repository
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
-
-                foreach (var item in issueData)
+                var ticketDtos = new List<Ticket>();
+                foreach (var ticket in issueData)
                 {
-                    item.Attachment = await GetFileDownloadLink(item.Id);
+                    var attachmentUrl = await GetFileDownloadLink(ticket.Id);
+                    var ticketDto = new Ticket
+                    {
+                        Title = ticket.Title,
+                        Status = ticket.Status,
+                        Description = ticket.Description,
+                        Attachment = attachmentUrl,
+                        CreatedAt = ticket.CreatedAt,
+                        TicketNumber=ticket.TicketNumber
+
+                       
+                    };
+                    ticketDtos.Add(ticketDto);
                 }
 
-                return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = ticketDtos, Message = "Issue data found", Status = true };
 
             }
             catch (Exception ex)
@@ -236,8 +252,8 @@ namespace SupportApp.Repository
             {
                 if (issueId != null)
                 {
-                    var issueData = await _context.Ticket.FirstOrDefaultAsync(ticket => ticket.Id==issueId);
-                    
+                    var issueData = await _context.Ticket.FirstOrDefaultAsync(ticket => ticket.Id == issueId);
+
                     issueData.Status = TicketStatus.Deleted;
                     await _context.SaveChangesAsync();
                     return new ApiResponseDto<Ticket> { Data = issueData, Message = "Deleted Successfully", Status = true };
@@ -251,31 +267,31 @@ namespace SupportApp.Repository
             {
                 return new ApiResponseDto<Ticket> { Status = false, Message = "Delete operation invalid.", Data = null };
             }
-            
+
         }
 
         //:::::::::::::::::  user Created Issue List
-
         public async Task<ApiResponseDto<List<Ticket>>> UserCreatedIssueList(string EmpCode)
         {
             var userIssueData = await _context.Ticket.Where(data => data.CreatedBy == EmpCode).ToListAsync();
-            if (userIssueData.Count() > 0  && userIssueData !=null) {
+            if (userIssueData.Count() > 0 && userIssueData != null) {
                 return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created Issue list", Data = userIssueData };
-
             }
             return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created Issue list", Data = userIssueData };
         }
 
 
-
-
-
-
-
-
-
-
-
+        //:::::::::::::::::: Get Raised Ticket List by User
+        public async Task<ApiResponseDto<List<Ticket>>> GetRaisedSystemTicketByUser(string EmpCode, int page, int size){
+            var userRaisedTicketData = await _context.Ticket
+                                       .Where(data=> data.Status<TicketStatus.Deleted && data.IsEmail==false && data.CreatedBy==EmpCode)
+                                       .ToListAsync();
+            if (userRaisedTicketData.Count() > 0 && userRaisedTicketData != null)
+            {
+                return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created ticket list", Data = userRaisedTicketData };
+            }
+            return new ApiResponseDto<List<Ticket>> { Status = false, Message = "Internal error of getting tickets data." , Data= userRaisedTicketData };
+        }
 
 
 
@@ -296,45 +312,17 @@ namespace SupportApp.Repository
         {
             try
             {
-                var fileDownloadLink = _context.GlobalFileUpload
-                    .Where(data=> data.TicketId == ticketId)
-                    .FirstOrDefault();
+                var fileDownloadLink = await _context.GlobalFileUpload
+                    .Where(data => data.TicketId == ticketId)
+                    .FirstOrDefaultAsync();
 
-                return fileDownloadLink.FilePathUrl?? "null";
-
-            }catch (Exception ex)
+                return fileDownloadLink?.FilePathUrl ?? "null";
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return null;
             }
-        }
-
-        // ::::::::::::: jwt token data Retrieve
-
-        public async Task<string> tokenDataRetrieve( string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException("Token cannot be null or empty", nameof(token));
-            }
-
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-
-            if (jsonToken == null)
-            {
-                throw new ArgumentException("Invalid token format", nameof(token));
-            }
-
-            var claims = jsonToken.Claims;
-            var empCode = claims.FirstOrDefault(claim => claim.Type == "EmpCode")?.Value;
-
-            if (string.IsNullOrEmpty(empCode))
-            {
-                throw new Exception("EmpCode claim not found in token");
-            }
-
-            return await Task.FromResult(empCode);
         }
     }
 }

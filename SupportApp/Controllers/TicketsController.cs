@@ -258,21 +258,7 @@ namespace SupportApp.Controllers
 		//------------------------------------------- agent routes apis................
 
 
-		// get ticket list by ticket creator ID
-		[HttpGet("getRecentRaisedTicketByCreator/{EmpCode}")]
-		public async Task<ActionResult<Ticket>> GetRecentRaisedTicketByCreator(string EmpCode)
-		{
-			try
-			{
-				var acknowledgeTicketData = await _ticketService.GetRecentRaisedTicketListByCreatorAsync(EmpCode);
-				return Ok(acknowledgeTicketData);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return StatusCode(500);
-			}
-		}
+
 
 
 		// UpdateForCheckTicketStatus API 
@@ -422,8 +408,6 @@ namespace SupportApp.Controllers
         {
             try
             {
-               
-
                 var responseData = await _ticketInterface.RaisedIssueWithAttachment(ticketAndTargetDto);
 
                 return Ok(new ApiResponseDto<string>
@@ -436,6 +420,28 @@ namespace SupportApp.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+
+        // get ticket list by user
+        [HttpGet("getRaisedTicketByUser/{EmpCode}/page={page}&size={size}")]
+        public async Task<ActionResult<Ticket>> GetRecentRaisedTicketByCreator(string empCode , int page , int size)
+        {
+            try
+            {
+                var ticketPaginationData = await _ticketInterface.GetRaisedSystemTicketByUser(empCode,page, size);
+                return Ok(new ApiResponseDto<IEnumerable<Ticket>>
+                {
+                    Status = ticketPaginationData.Status,
+                    Message = ticketPaginationData.Message,
+                    Data = ticketPaginationData.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Server Response Error.");
             }
         }
 

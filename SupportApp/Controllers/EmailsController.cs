@@ -48,7 +48,7 @@ namespace SupportApp.Controllers
         }
         
         [HttpPost("create-mail-ticket")]
-        public async Task<IActionResult> ComposeMailTicket( Mailrequest mailRequest)
+        public async Task<ActionResult> ComposeMailTicket([FromForm] Mailrequest mailRequest)
         {
             try
             {

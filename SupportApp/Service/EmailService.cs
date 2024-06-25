@@ -19,10 +19,14 @@ namespace SupportApp.Service
         public async Task<ApiResponseDto<string>> CreateMailTicket(Mailrequest mailrequest) {
             try
             {
+
+                var toMail = "rakibul.it@hameemgroup.com";
+
                 var email = new MimeMessage();
                 //using mimekit to sent the mail 
                 email.Sender = MailboxAddress.Parse(_emailSettings.Email);
-                email.To.Add(MailboxAddress.Parse(mailrequest.ToEmail));
+                //email.To.Add(MailboxAddress.Parse(mailrequest.ToEmail));
+                email.To.Add(MailboxAddress.Parse(toMail));
                 email.Subject = mailrequest.Subject;
 
                 var builder = new BodyBuilder();

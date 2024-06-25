@@ -60,13 +60,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://192.168.0.11:9999",
+            builder.WithOrigins("http://192.168.3.11:9000",
                                 "http://localhost:5173", 
-                                "http://192.168.0.12:50002", 
-                                "http://192.168.0.13")
+                                "http://192.168.3.12:5002", 
+                                "http://192.168.3.13")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
+    
 });
 
 
@@ -89,7 +90,7 @@ else {
 
 // jwt service
 app.UseAuthentication();
-
+app.UseCors("");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

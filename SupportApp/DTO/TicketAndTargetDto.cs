@@ -8,7 +8,8 @@ namespace SupportApp.DTO
         public string? Description { get; set; }
         public int UserId { get; set; }
         public IFormFile? Attachment { get; set; }
-		public bool? IsEmail { get; set; }
+        public string? AttachmentUrl { get; set; }
+        public bool? IsEmail { get; set; }
         public string? FromEmail { get; set; }
         public string? EmailCc { get; set; }
         public int UpdatedBy { get; set; }
