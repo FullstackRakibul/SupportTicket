@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
@@ -286,9 +287,13 @@ namespace SupportApp.Repository
             var userRaisedTicketData = await _context.Ticket
                                        .Where(data=> data.Status<TicketStatus.Deleted && data.IsEmail==false && data.CreatedBy==EmpCode)
                                        .ToListAsync();
-            if (userRaisedTicketData.Count() > 0 && userRaisedTicketData != null)
+            if (userRaisedTicketData != null && userRaisedTicketData.Count() > 0)
             {
                 return new ApiResponseDto<List<Ticket>> { Status = true, Message = "user created ticket list", Data = userRaisedTicketData };
+            }
+            else if(userRaisedTicketData != null)
+            {
+                return new ApiResponseDto<List<Ticket>> { Status = true, Message = "No Ticket has been raised", Data = null };
             }
             return new ApiResponseDto<List<Ticket>> { Status = false, Message = "Internal error of getting tickets data." , Data= userRaisedTicketData };
         }
@@ -324,5 +329,51 @@ namespace SupportApp.Repository
                 return null;
             }
         }
+
+        public async Task<FileResult> DownloadFileAsync(int fileId)
+        {
+            var filePath = await GetFileDownloadLink(fileId);
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                return null;
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            var fileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+            var mimeType = GetMimeType(fileExtension);
+            var fileName = Path.GetFileName(filePath);
+
+            return new FileStreamResult(memory, mimeType)
+            {
+                FileDownloadName = fileName
+            };
+        }
+
+        private string GetMimeType(string extension)
+        {
+            switch (extension)
+            {
+                case ".txt": return "text/plain";
+                case ".pdf": return "application/pdf";
+                case ".doc": return "application/vnd.ms-word";
+                case ".docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case ".xls": return "application/vnd.ms-excel";
+                case ".xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case ".png": return "image/png";
+                case ".jpg": return "image/jpeg";
+                case ".jpeg": return "image/jpeg";
+                case ".gif": return "image/gif";
+                case ".csv": return "text/csv";
+                default: return "application/octet-stream";
+            }
+        }
+
     }
 }

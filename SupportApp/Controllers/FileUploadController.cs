@@ -139,5 +139,22 @@ namespace SupportApp.Controllers
 
         }
 
+
+
+        //download file 
+
+        [HttpGet("get-file-{ticketId}")]
+        public async Task<IActionResult> DownloadFile(int ticketId)
+        {
+            var fileResult = await _globalFileUploadInterface.DownloadFileAsync(ticketId);
+
+            if (fileResult == null)
+            {
+                return NotFound();
+            }
+
+            return fileResult;
+        }
+
     }
 }

@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SupportApp.DTO;
 using SupportApp.Models;
 using SupportApp.Repository.IReposiroty;
 
 namespace SupportApp.Repository
 {
-    public class GlobalFileUploadRepository:IGlobalFileUploadInterface
+    public class GlobalFileUploadRepository : IGlobalFileUploadInterface
     {
-        private readonly SupportAppDbContext _supportAppDbContext ;
+        private readonly SupportAppDbContext _supportAppDbContext;
         public GlobalFileUploadRepository(SupportAppDbContext supportAppDbContext)
         {
             _supportAppDbContext = supportAppDbContext;
@@ -39,7 +40,7 @@ namespace SupportApp.Repository
                 _supportAppDbContext.GlobalFileUpload.Add(insertFileDataIntoDB);
                 await _supportAppDbContext.SaveChangesAsync();
 
-                return insertFileDataIntoDB;              
+                return insertFileDataIntoDB;
             }
             catch (Exception ex)
             {
@@ -52,8 +53,8 @@ namespace SupportApp.Repository
         private async Task<string> SaveFile(GlobalFileUploadDto globalFileUploadDto)
         {
             //root path for the uploaded file
-            string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            //string wwwrootPath = @"C:\inetpub\wwwroot\UplodedFiles";
+            //string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            string wwwrootPath = @"D:\ApplicationFiles\supportDesk";
 
             //create folder if not exist
             if (!Directory.Exists(wwwrootPath))
@@ -88,6 +89,73 @@ namespace SupportApp.Repository
             }
 
             return filePath;
+        }
+
+
+
+
+        // download file 
+
+        public async Task<string> GetFileDownloadLink(int trackId)
+        {
+            try
+            {
+                var fileDownloadLink = await _supportAppDbContext.GlobalFileUpload
+                    .Where(data => data.TicketId == trackId)
+                    .FirstOrDefaultAsync();
+
+                return fileDownloadLink?.FilePathUrl ?? "null";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<FileResult> DownloadFileAsync(int trackId)
+        {
+            var filePath = await GetFileDownloadLink(trackId);
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                return null;
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            var fileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+            var mimeType = GetMimeType(fileExtension);
+            var fileName = Path.GetFileName(filePath);
+
+            return new FileStreamResult(memory, mimeType)
+            {
+                FileDownloadName = fileName
+            };
+        }
+
+        private string GetMimeType(string extension)
+        {
+            switch (extension)
+            {
+                case ".txt": return "text/plain";
+                case ".pdf": return "application/pdf";
+                case ".doc": return "application/vnd.ms-word";
+                case ".docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case ".xls": return "application/vnd.ms-excel";
+                case ".xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case ".png": return "image/png";
+                case ".jpg": return "image/jpeg";
+                case ".jpeg": return "image/jpeg";
+                case ".gif": return "image/gif";
+                case ".csv": return "text/csv";
+                default: return "application/octet-stream";
+            }
         }
 
     }

@@ -425,7 +425,7 @@ namespace SupportApp.Controllers
 
 
         // get ticket list by user
-        [HttpGet("getRaisedTicketByUser/{EmpCode}/page={page}&size={size}")]
+        [HttpGet("getRaisedTicketByUser/{empCode}/page={page}&size={size}")]
         public async Task<ActionResult<Ticket>> GetRecentRaisedTicketByCreator(string empCode , int page , int size)
         {
             try
@@ -533,5 +533,8 @@ namespace SupportApp.Controllers
                 return StatusCode(500, "Server Response Error.");
             }
         }
+
+        
+
     }
 }
