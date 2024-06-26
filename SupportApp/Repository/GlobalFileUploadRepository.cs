@@ -6,9 +6,9 @@ using SupportApp.Repository.IReposiroty;
 
 namespace SupportApp.Repository
 {
-    public class GlobalFileUploadRepository:IGlobalFileUploadInterface
+    public class GlobalFileUploadRepository : IGlobalFileUploadInterface
     {
-        private readonly SupportAppDbContext _supportAppDbContext ;
+        private readonly SupportAppDbContext _supportAppDbContext;
         public GlobalFileUploadRepository(SupportAppDbContext supportAppDbContext)
         {
             _supportAppDbContext = supportAppDbContext;
@@ -40,7 +40,7 @@ namespace SupportApp.Repository
                 _supportAppDbContext.GlobalFileUpload.Add(insertFileDataIntoDB);
                 await _supportAppDbContext.SaveChangesAsync();
 
-                return insertFileDataIntoDB;              
+                return insertFileDataIntoDB;
             }
             catch (Exception ex)
             {
@@ -95,7 +95,8 @@ namespace SupportApp.Repository
 
 
 
-        //download file 
+        // download file 
+
 
         public async Task<string> GetFileDownloadLink(int trackId)
         {

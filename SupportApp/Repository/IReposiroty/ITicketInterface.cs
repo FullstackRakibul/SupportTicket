@@ -1,4 +1,5 @@
-﻿using SupportApp.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using SupportApp.DTO;
 using SupportApp.Models;
 using static SupportApp.Repository.TicketRepository;
 namespace SupportApp.Repository.IReposiroty
@@ -15,5 +16,6 @@ namespace SupportApp.Repository.IReposiroty
         Task<ApiResponseDto<Ticket>> DeleteIssue(int issueId);
         Task<ApiResponseDto<List<Ticket>>> UserCreatedIssueList(string EmpCode);
         Task<ApiResponseDto<List<Ticket>>> GetRaisedSystemTicketByUser(string EmpCode , int page, int size );
+        Task<FileResult> DownloadFileAsync(int fileId);
     }
 }
