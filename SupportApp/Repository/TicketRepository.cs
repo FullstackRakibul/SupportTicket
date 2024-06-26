@@ -164,25 +164,25 @@ namespace SupportApp.Repository
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
-                var ticketDtos = new List<Ticket>();
-                foreach (var ticket in issueData)
-                {
-                    var attachmentUrl = await GetFileDownloadLink(ticket.Id);
-                    var ticketDto = new Ticket
-                    {
-                        Title = ticket.Title,
-                        Status = ticket.Status,
-                        Description = ticket.Description,
-                        Attachment = attachmentUrl,
-                        CreatedAt = ticket.CreatedAt,
-                        TicketNumber=ticket.TicketNumber
+                //var ticketDtos = new List<Ticket>();
+                //foreach (var ticket in issueData)
+                //{
+                //    var attachmentUrl = await GetFileDownloadLink(ticket.Id);
+                //    var ticketDto = new Ticket
+                //    {
+                //        Title = ticket.Title,
+                //        Status = ticket.Status,
+                //        Description = ticket.Description,
+                //        Attachment = attachmentUrl,
+                //        CreatedAt = ticket.CreatedAt,
+                //        TicketNumber=ticket.TicketNumber
 
                        
-                    };
-                    ticketDtos.Add(ticketDto);
-                }
+                //    };
+                //    ticketDtos.Add(ticketDto);
+                //}
 
-                return new ApiResponseDto<IEnumerable<Ticket>> { Data = ticketDtos, Message = "Issue data found", Status = true };
+                return new ApiResponseDto<IEnumerable<Ticket>> { Data = issueData, Message = "Issue data found", Status = true };
 
             }
             catch (Exception ex)
