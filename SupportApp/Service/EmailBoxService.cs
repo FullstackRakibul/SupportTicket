@@ -70,6 +70,7 @@ public class EmailBoxService
         {
             using var client = new Pop3Client();
             client.CheckCertificateRevocation = false;
+            client.Timeout = 10000;
             client.Connect("192.168.1.254", 110, SecureSocketOptions.None);
             client.Authenticate("rakibul.it", "B&k8#G!w@uR");
 
@@ -94,9 +95,6 @@ public class EmailBoxService
                         //Attachments = GetAttachmentFilenames(message)
                     };
                     emailDetailsList.Add(emailDetails);
-
-
-
                 }
             }
             else

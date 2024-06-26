@@ -18,6 +18,8 @@ using Org.BouncyCastle.Asn1.Mozilla;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Drawing;
+using SupportApp.Helper;
+using static SupportApp.Service.EmailBoxService;
 
 namespace SupportApp.Controllers
 {
@@ -146,7 +148,12 @@ namespace SupportApp.Controllers
                 {
                     _ticketService.CreateTicketFromEmail(emailDetails);
                 }
-                return Ok(emailDetailsList);
+                return Ok(new ApiResponseDto<List<EmailDetails>>
+                {
+                    Status=true,
+                    Message="Mail Fetch Request.",
+                    Data=emailDetailsList
+                });
             }
             catch (Exception ex)
             {

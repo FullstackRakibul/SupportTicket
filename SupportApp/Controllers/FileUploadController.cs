@@ -140,7 +140,6 @@ namespace SupportApp.Controllers
         }
 
 
-
         //download file 
 
         [HttpGet("get-file-{ticketId}")]
